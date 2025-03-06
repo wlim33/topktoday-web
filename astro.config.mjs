@@ -6,11 +6,9 @@ import netlify from '@astrojs/netlify/functions';
 
 export default defineConfig({
   output: 'server',
-  vite: {
-    ssr: {
-      external: ['pg'],
-    }
-  },
+  //vite: {
+  //  plugins
+  //},
   adapter: netlify({ edgeMiddleware: true }),
 
 })

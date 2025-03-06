@@ -1,0 +1,104 @@
+---
+import "@/styles/styles.scss";
+import PageLayout from "@/layouts/main.astro";
+import { getLeaderboardName } from "@/lib/server/api";
+
+const { leaderboard_id } = Astro.params;
+
+let displayName = "";
+
+try {
+	displayName = await getLeaderboardName(leaderboard_id as string);
+} catch (e) {
+	console.error(e);
+	Astro.redirect("/system-down");
+}
+---
+
+<PageLayout title="New Submission" leaderboard={leaderboard_id}>
+	<div class="container" style="width: 50%;">
+		<article>
+			<header>
+				<nav>
+					<h2>
+						Submit your score for <a
+							href={`/leaderboard/${leaderboard_id}`}
+							>{displayName}</a
+						>
+					</h2>
+				</nav>
+			</header>
+
+			<form id="new-submission-form">
+				<fieldset>
+					<label for="new-submission-link"
+						>Link attachment</label
+					>
+					<input
+						id="new-submission-link"
+						name="link"
+						placeholder="https://www.youtube.com/watch?v=kdKFyHPXdfY"
+						aria-label="anonymous-submission-link"
+						autocomplete="display-name"
+						type="url"
+					/>
+					<small>
+						This link will be available to
+						anyone with access to this
+						leaderboard.
+					</small>
+
+					<label for="new-submission-score"
+						>Score</label
+					>
+					<input
+						id="new-submission-score"
+						name="score"
+						placeholder="90000"
+						aria-label="submission-score"
+						type="number"
+						step="0.0001"
+					/>
+				</fieldset>
+
+				<button type="submit"
+					>Submit for validation</button
+				>
+			</form>
+			<div role="alert" aria-live="assertive"></div>
+			<script>
+				import { setupForm } from "@/lib/client/utils";
+				import { addScore } from "@/lib/client/formSubmits";
+				import { getPageData } from "@/lib/client/utils";
+				import { newSubmission } from "@/lib/client/schemas";
+				import { navigate } from "astro:transitions/client";
+
+				setupForm("#new-submission-form", {
+					onBusy: "Updating...",
+					schema: newSubmission,
+					emitEvent: new CustomEvent("update", {
+						bubbles: true,
+					}),
+					onSubmit: async (submission: {
+						file: File;
+						link: string;
+						score: number;
+					}) => {
+						await addScore(
+							submission.score,
+							submission.link,
+						);
+
+						navigate(
+							`/leaderboard/${
+								getPageData()
+									.leaderboard
+							}`,
+						);
+						return true;
+					},
+				});
+			</script>
+		</article>
+	</div>
+</PageLayout>

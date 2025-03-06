@@ -1,0 +1,56 @@
+---
+const { leaderboardId } = Astro.props;
+---
+
+<div class="grid">
+	<div></div>
+	<article>
+		<div></div>
+
+		<h4>Admin Panel</h4>
+
+		<form id="admin-form" data-leaderboard-id={leaderboardId}>
+			<label> Update/add score </label>
+			<fieldset class="grid">
+				<input
+					name="username"
+					placeholder="Player123"
+					aria-label="admin-update-username"
+					autocomplete="title"
+				/>
+
+				<input
+					name="score"
+					placeholder="90000"
+					aria-label="admin-update-score"
+					type="number"
+				/>
+
+				<button type="submit">Add</button>
+			</fieldset>
+		</form>
+		<div role="alert" aria-live="assertive"></div>
+		<script>
+			import { setupForm } from "@/lib/client/utils";
+			import { addScore } from "@/lib/client/formSubmits";
+			import { adminFormSchema } from "@/lib/client/schemas";
+
+			setupForm("#admin-form", {
+				onBusy: "Updating...",
+				schema: adminFormSchema,
+				emitEvent: new CustomEvent("update", {
+					bubbles: true,
+				}),
+				onSubmit: async (submission: {
+					username: string;
+					score: number;
+				}) => {
+					await addScore(submission.score);
+
+					return true;
+				},
+			});
+		</script>
+	</article>
+	<div></div>
+</div>

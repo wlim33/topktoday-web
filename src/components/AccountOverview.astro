@@ -1,0 +1,58 @@
+---
+const { leaderboards, submissions } = Astro.props;
+const leaderboard_count = leaderboards.length;
+const submission_count = submissions.length;
+---
+
+<article id="account-overview">
+	<header>
+		<hgroup>
+			<h2>Account Overview</h2>
+		</hgroup>
+	</header>
+
+	<h3>Leaderboards</h3>
+	<ul>
+		{
+			leaderboards.map((leaderboard) => (
+				<li>
+					<a
+						href={`/leaderboard/${leaderboard.id}`}
+					>
+						{leaderboard.title}
+					</a>
+				</li>
+			))
+		}
+	</ul>
+	<small>{leaderboard_count} total</small>
+	<h3>Submissions</h3>
+	<ul>
+		{
+			submissions.map((submission) => (
+				<li>
+					<span>
+						<a
+							href={`/leaderboard/${submission.leaderboard_id}/submission/${submission.id}`}
+						>
+							{submission.score}
+						</a>
+						for
+						<a
+							href={`/leaderboard/${submission.leaderboard_id}`}
+						>
+							{
+								submission.leaderboard_title
+							}
+						</a>
+					</span>
+				</li>
+			))
+		}
+	</ul>
+
+	<small>{submission_count} total</small>
+	<footer>
+		<small>Account created 12 years ago.</small>
+	</footer>
+</article>

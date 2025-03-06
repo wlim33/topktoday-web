@@ -1,0 +1,34 @@
+---
+const { id } = Astro.props;
+---
+
+<div>
+	<span class="secondary" data-tooltip="Click to copy." id="copy-link"
+		>{`www.topktoday.dev/leaderboard/${id}`}</span
+	>
+	<span>(click to copy)</span>
+	<script>
+		const copyLink = document.querySelector(
+			"#copy-link",
+		) as HTMLSpanElement;
+		copyLink.addEventListener("click", (e) => {
+			e.preventDefault();
+			copyLink.setAttribute(
+				"data-tooltip",
+				"Copied to clipboard!",
+			);
+			navigator.clipboard.writeText(copyLink.innerHTML);
+
+			setTimeout(() => {
+				copyLink.removeAttribute("data-tooltip");
+
+				setTimeout(() => {
+					copyLink.setAttribute(
+						"data-tooltip",
+						"Click to copy",
+					);
+				}, 1000);
+			}, 1000);
+		});
+	</script>
+</div>

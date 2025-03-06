@@ -1,0 +1,125 @@
+@use "@picocss/pico";
+@use "@picocss/pico/scss/colors" as *;
+
+:root {
+  --pico-font-family-sans-serif: Inter, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, Helvetica, Arial, "Helvetica Neue", sans-serif, var(--pico-font-family-emoji);
+  --pico-font-size: 87.5%;
+  /* Original: 100% */
+  --pico-line-height: 1.25;
+  /* Original: 1.5 */
+  --pico-form-element-spacing-vertical: 0.75rem;
+  /* Original: 1rem */
+  --pico-form-element-spacing-horizontal: 1.0rem;
+  /* Original: 1.25rem */
+  --pico-border-radius: 0.175rem;
+  /* Original: 0.25rem */
+}
+
+@media (min-width: 576px) {
+  :root {
+    --pico-font-size: 87.5%;
+    /* Original: 106.25% */
+  }
+
+  .centered-card {
+    width: 100%
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --pico-font-size: 87.5%;
+    /* Original: 112.5% */
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --pico-font-size: 87.5%;
+    /* Original: 118.75% */
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --pico-font-size: 87.5%;
+    /* Original: 125% */
+  }
+
+  .centered-card {
+    width: 65%
+  }
+
+  .center-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+  }
+}
+
+@media (min-width: 1536px) {
+  :root {
+    --pico-font-size: 87.5%;
+
+  }
+
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  --pico-font-weight: 600;
+  /* Original: 700 */
+}
+
+article {
+  border: 1px solid var(--pico-muted-border-color);
+  /* Original doesn't have a border */
+  border-radius: calc(var(--pico-border-radius) * 2);
+  /* Original: var(--pico-border-radius) */
+}
+
+article>footer {
+  border-radius: calc(var(--pico-border-radius) * 2);
+  /* Original: var(--pico-border-radius) */
+}
+
+@keyframes enter {
+  from {
+    transform: translateY(-0.2rem);
+    opacity: 0.5;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+[role="alert"]>* {
+  background: $red-850;
+  padding: 1rem;
+  animation: enter 0.3s ease;
+}
+
+.gold {
+  color: $amber-350;
+}
+
+.silver {
+  color: $slate-350;
+}
+
+.bronze {
+  color: $pumpkin-600;
+}
+
+.row-timestamp {
+  text-align: center;
+}

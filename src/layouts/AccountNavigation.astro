@@ -1,0 +1,66 @@
+---
+import { getCustomer } from "@lemonsqueezy/lemonsqueezy.js";
+import "@/styles/styles.scss";
+
+const { user, customer_id } = Astro.locals;
+const isLoggedIn: boolean = user !== null && !user.isAnonymous;
+
+let billing_portal_link = "https://topktoday.lemonsqueezy.com/billing";
+if (customer_id) {
+	const { data } = await getCustomer(customer_id);
+
+	console.log(data);
+	if (
+		data &&
+		data.attributes &&
+		data.attributes.urls &&
+		data.attributes.urls.customer_portal
+	) {
+		billing_portal_link =
+			data["attributes"]["urls"]["customer_portal"];
+	}
+}
+---
+
+<section class="container" style="width: 66%;">
+	{
+		isLoggedIn && (
+			<nav>
+				<ul>
+					<li>
+						<a href="/account">Account</a>
+					</li>
+					<li>
+						<a href={billing_portal_link}>
+							Payment Dashboard
+						</a>
+					</li>
+				</ul>
+
+				<ul>
+					<li>
+						<button
+							id="logout"
+							class="secondary outline"
+						>
+							Log Out
+						</button>
+					</li>
+				</ul>
+			</nav>
+		)
+	}
+	<slot />
+	<script>
+		import { navigate } from "astro:transitions/client";
+		import { authClient } from "@/lib/client/auth-client";
+		const logoutButton: HTMLButtonElement = document.querySelector(
+			"#logout",
+		) as HTMLButtonElement;
+		logoutButton.addEventListener("click", async (e: Event) => {
+			e.preventDefault();
+			await authClient.signOut();
+			navigate("/");
+		});
+	</script>
+</section>

@@ -1,0 +1,185 @@
+---
+import "../../styles/styles.scss";
+import CopyLink from "@/components/CopyLink.astro";
+import PageLayout from "@/layouts/main.astro";
+import {
+	getLeaderboard,
+	getLeaderboardName,
+	getVerifiers,
+} from "@/lib/server/api";
+
+import { type Entry, formatTimeAgo } from "@/lib/server/utils";
+
+const { leaderboard_id } = Astro.params;
+
+let displayName = "";
+let leaderboard = { scores: [] };
+let verifiers = [];
+try {
+	displayName = await getLeaderboardName(leaderboard_id as string);
+	leaderboard = await getLeaderboard(leaderboard_id as string);
+	verifiers = (await getVerifiers(leaderboard_id as string)).verifiers;
+	console.log(verifiers);
+	console.log(leaderboard);
+} catch (e) {
+	console.error(e);
+	Astro.redirect("/system-down");
+}
+---
+
+<PageLayout title="Leaderboard" leaderboard={leaderboard_id}>
+	<section id="leaderboard-section" class="container" style="width: 66%;">
+		<nav>
+			<hgroup>
+				<h1>{displayName}</h1>
+				<CopyLink id={leaderboard_id} />
+			</hgroup>
+			<div style="display: flex; align-items: center;">
+				<a
+					type="button"
+					href={`/leaderboard/${leaderboard_id}/submission`}
+					><strong>+ New Submission</strong></a
+				>
+			</div>
+		</nav>
+		<article id="leaderboard-article">
+			<table id="leaderboard-table" is="score-table">
+				<thead>
+					<tr>
+						<th scope="col">Rank</th>
+						<th scope="col">Player</th>
+						<th scope="col">Score</th>
+						<th
+							scope="col"
+							class="row-timestamp"
+							>Date</th
+						>
+					</tr>
+				</thead>
+				<tbody>
+					{
+						leaderboard.scores.map(
+							(
+								score: Entry,
+								idx: number,
+							) => (
+								<tr
+									data-timestamp={
+										score.submitted_at
+									}
+								>
+									<th
+										class="row-rank"
+										scope="row"
+									>
+										{idx +
+											1}
+										{!score.verified && (
+											<sup>
+												*
+											</sup>
+										)}
+									</th>
+									<td class="row-user">
+										<a
+											href={`/account/${score.user.id}`}
+										>
+											{
+												score
+													.user
+													.username
+											}
+										</a>
+									</td>
+									<td class="row-score">
+										<a
+											href={`/leaderboard/${leaderboard_id}/submission/${score.id}`}
+										>
+											{
+												score.score
+											}
+										</a>
+									</td>
+									<td class="row-timestamp">
+										{formatTimeAgo(
+											score.submitted_at,
+										)}
+									</td>
+								</tr>
+							),
+						)
+					}
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="4"
+							>Total players: <span
+								id="player-count"
+								>{
+									leaderboard
+										.scores
+										.length
+								}</span
+							></td
+						>
+					</tr>
+				</tfoot>
+
+				<caption></caption>
+			</table>
+			<small>*scores are not verified.</small>
+			<script>
+				const table = document.querySelector(
+					"#leaderboard-table",
+				) as HTMLTableElement;
+
+				function colorRows() {
+					const first =
+						table.tBodies[0].children[0]?.querySelector(
+							".row-rank",
+						);
+					first?.classList.add("gold");
+
+					const second =
+						table.tBodies[0].children[1]?.querySelector(
+							".row-rank",
+						);
+					second?.classList.add("silver");
+
+					const third =
+						table.tBodies[0].children[2]?.querySelector(
+							".row-rank",
+						);
+					third?.classList.add("bronze");
+
+					if (first) {
+						first.innerHTML = `<strong>${first.innerHTML}</strong>`;
+					}
+					if (second) {
+						second.innerHTML = `<strong>${second.innerHTML}</strong>`;
+					}
+					if (third) {
+						third.innerHTML = `<strong>${third.innerHTML}</strong>`;
+					}
+				}
+				colorRows();
+			</script>
+		</article>
+
+		<hr />
+		<h4>Owners</h4>
+		<ul>
+			{
+				verifiers.map((verifier) => (
+					<li>
+						<a
+							href={`/account/${verifier.id}`}
+						>
+							{verifier.username}
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+</PageLayout>

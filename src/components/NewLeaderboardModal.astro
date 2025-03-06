@@ -1,0 +1,202 @@
+---
+const { userID } = Astro.props;
+---
+
+<dialog id="new-leaderboard-modal" data-user={userID}>
+	<article>
+		<header>
+			<button
+				aria-label="Close"
+				class="close-modal"
+				rel="prev"></button>
+			<h4 style="text-align: center;">New Leaderboard</h4>
+		</header>
+
+		<form id="new-leaderboard">
+			<fieldset>
+				<label> Leaderboard Title </label>
+				<input
+					name="title"
+					placeholder="Weekly Bar Trivia Rankings"
+					aria-label="new-leaderboard-title"
+					autocomplete="new-leaderboard-title"
+				/>
+
+				<small id="display-name-helper"
+					>This title will be public.</small
+				>
+
+				<details open>
+					<summary
+						>Advanced options (Optional)</summary
+					>
+
+					<fieldset>
+						<legend> Rank by: </legend>
+						<input
+							type="radio"
+							name="is-highest-score"
+							id="highest-score"
+							checked
+						/>
+						<label for="highest-score"
+							>Highest score</label
+						>
+						<input
+							type="radio"
+							name="is-highest-score"
+							id="lowest-time"
+						/>
+						<label for="lowest-time"
+							>Lowest time</label
+						>
+					</fieldset>
+					<fieldset>
+						<input
+							type="checkbox"
+							id="only-one-submission"
+							name="only-one-submission"
+						/>
+						<label for="only-one-submission"
+							>Players can only show
+							up once on the
+							leaderboard
+						</label>
+					</fieldset>
+
+					<fieldset>
+						<nav>
+							<label
+								>Start accepting
+								<span
+									>submissions</span
+								>
+								at:
+							</label>
+							<label>
+								<input
+									id="start-date-now"
+									name="start-date-now"
+									type="checkbox"
+									role="switch"
+									checked
+								/>
+								Now
+							</label>
+						</nav>
+						<input
+							id="start-datetime"
+							type="datetime-local"
+							name="start-datetime"
+							aria-label="Start datetime local"
+						/>
+					</fieldset>
+					<fieldset>
+						<nav>
+							<label
+								>Stop accepting
+								<span
+									>submissions</span
+								>
+								after:
+							</label>
+							<label>
+								<input
+									id="end-date-never"
+									name="end-date-never"
+									type="checkbox"
+									role="switch"
+								/>
+								Never
+							</label>
+						</nav>
+
+						<input
+							id="cutoff-datetime"
+							type="datetime-local"
+							name="cutoff-datetime"
+							aria-label="End datetime local"
+						/>
+					</fieldset>
+				</details>
+			</fieldset>
+			<button type="submit">Get Link</button>
+		</form>
+		<div role="alert" aria-live="assertive"></div>
+
+		<script>
+			import {
+				setupForm,
+				getTodayAndTomorrow,
+				hideBasedOn,
+			} from "@/lib/client/utils";
+			import { newLeaderboard } from "@/lib/client/formSubmits";
+			import { newLeaderboardSchema } from "@/lib/client/schemas";
+			import { LEADERBOARD_PAGE_BASE } from "@/lib/client/urls";
+			import { navigate } from "astro:transitions/client";
+			const closeModal = () => {
+				const modal = document.querySelector(
+					"#new-leaderboard-modal",
+				);
+
+				modal?.attributes.removeNamedItem("open");
+				document.documentElement.classList.remove(
+					"modal-is-open",
+				);
+
+				document.documentElement.classList.remove(
+					"modal-is-opening",
+				);
+				document.documentElement.classList.add(
+					"modal-is-closing",
+				);
+			};
+
+			const prefill = getTodayAndTomorrow();
+
+			const start_input = document.querySelector(
+				"input#start-datetime",
+			);
+			const stop_input = document.querySelector(
+				"input#cutoff-datetime",
+			);
+			start_input?.setAttribute("min", prefill.today);
+			stop_input?.setAttribute("min", prefill.tomorrow);
+
+			start_input?.setAttribute("value", prefill.today);
+			stop_input?.setAttribute("value", prefill.tomorrow);
+
+			hideBasedOn("#end-date-never", "input#cutoff-datetime");
+			hideBasedOn("#start-date-now", "input#start-datetime");
+
+			setupForm("#new-leaderboard", {
+				onBusy: "Creating...",
+				schema: newLeaderboardSchema,
+				onSubmit: async (submission) => {
+					console.log(submission);
+					const id =
+						await newLeaderboard(
+							submission,
+						);
+
+					navigate(
+						`${LEADERBOARD_PAGE_BASE}/${id}`,
+					);
+					return true;
+				},
+			});
+
+			document.querySelectorAll(".close-modal").forEach(
+				(elem) => {
+					elem.addEventListener(
+						"click",
+						(e: Event) => {
+							e.preventDefault();
+							closeModal();
+						},
+					);
+				},
+			);
+		</script>
+	</article>
+</dialog>

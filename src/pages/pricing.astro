@@ -1,0 +1,85 @@
+---
+import "../styles/styles.scss";
+import PageLayout from "../layouts/main.astro";
+
+const { user } = Astro.locals;
+
+let buyLink =
+	"https://topktoday.lemonsqueezy.com/buy/894d0421-b3e7-4f11-9ebd-467e7711de5d?media=0&discount=0";
+if (user?.email && !user.isAnonymous) {
+	buyLink = `${buyLink}&checkout[email]=${user.email}`;
+}
+
+if (user?.id) {
+	buyLink = `${buyLink}&checkout[custom][user_id]=${user.id}`;
+}
+---
+
+<PageLayout title="Pricing | Top K Today">
+	<h1 style="text-align: center;">Pricing</h1>
+	<div class="container" style="width: 75%;">
+		<div class="grid">
+			<article>
+				<header>
+					<h2 style="text-align: center;">
+						Casual
+					</h2>
+					<h4 style="text-align: center;">
+						always free.
+					</h4>
+				</header>
+
+				<section>
+					<ul>
+						<li>
+							<u>Unlimited</u> submissions
+						</li>
+						<li>5 new leaderboards/day</li>
+						<li>
+							3 concurrent verifiers
+							per leaderboard
+						</li>
+					</ul>
+				</section>
+				<hgroup style=" text-align: center;">
+					<hr />
+
+					<h4>Always free.</h4>
+					<p>
+						Create a free account <a
+							href="/register">here</a
+						>.
+					</p>
+				</hgroup>
+			</article>
+
+			<article>
+				<header>
+					<h2 style="text-align: center;">
+						Standard
+					</h2>
+					<h4 style="text-align: center;">
+						5$/ month
+					</h4>
+				</header>
+				<ul>
+					<li>
+						<u>Unlimited</u>
+						submissions
+					</li>
+					<li><b>50</b> new leaderboards/day</li>
+					<li>
+						<b>20</b> concurrent verifiers/leaderboard
+					</li>
+				</ul>
+				<hr />
+				<hgroup style="text-align: center;">
+					<a type="button" href={buyLink}
+						>Buy Pro Account</a
+					>
+					<p>More features coming soon!</p>
+				</hgroup>
+			</article>
+		</div>
+	</div>
+</PageLayout>

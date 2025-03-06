@@ -1,0 +1,77 @@
+---
+import "../styles/styles.scss";
+import MainLayout from "../layouts/main.astro";
+---
+
+<MainLayout title="Register">
+	<section class="container" style="width: 33%;">
+		<article>
+			<header><h2>Sign In</h2></header>
+			<form id="signin-form">
+				<label for="email">Email</label>
+				<input
+					type="email"
+					id="email"
+					name="email"
+					placeholder="Email"
+					autocomplete="email"
+				/>
+				<label for="password">Password</label>
+				<input
+					type="password"
+					id="password"
+					name="password"
+					placeholder="Password"
+					autocomplete="new-password"
+				/>
+				<fieldset>
+					<label>
+						<input
+							type="checkbox"
+							name="rememberme"
+						/>
+						Remember me
+					</label>
+				</fieldset>
+				<button type="submit">Sign In</button>
+			</form>
+
+			<button
+				id="register-button"
+				style="width: 100%;"
+				class="outline">Create a new account</button
+			>
+
+			<hr />
+			<div role="alert" aria-live="assertive"></div>
+		</article>
+		<script>
+			import { setupForm } from "@/lib/client/utils";
+			import { loginForm } from "@/lib/client/schemas";
+			import { authClient } from "@/lib/client/auth-client";
+
+			setupForm("#signin-form", {
+				onBusy: "Signing in...",
+				schema: loginForm,
+				onSubmit: async (submission: {
+					email: string;
+					password: string;
+					rememberme: boolean;
+				}) => {
+					const response =
+						await authClient.signIn.email({
+							email: submission.email,
+							password: submission.password,
+							rememberMe: submission.rememberme,
+						});
+					console.log("signing in")
+					if (response.error) {
+						return response.error
+							.message as string;
+					}
+					return true;
+				},
+			});
+		</script>
+	</section>
+</MainLayout>

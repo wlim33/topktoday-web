@@ -1,0 +1,80 @@
+---
+import "@/styles/styles.scss";
+import PageLayout from "@/layouts/main.astro";
+import { getLeaderboardName } from "@/lib/server/api";
+const { leaderboard_id, submission_id } = Astro.params;
+let displayName = "";
+try {
+	displayName = await getLeaderboardName(leaderboard_id as string);
+} catch (e) {
+	Astro.redirect("/system-down");
+}
+---
+
+<PageLayout
+	title="Leaderboard"
+	leaderboard={leaderboard_id}
+	submission={submission_id}
+>
+	<section class="container" style="width: 33%;">
+		<article>
+			<nav>
+				<hgroup>
+					<h2>
+						submission: {submission_id}
+					</h2>
+					<h3>Pending Verification</h3>
+				</hgroup>
+				<h4>
+					Leaderboard: {displayName}
+				</h4>
+			</nav>
+		</article>
+		<hr />
+		<article>
+			<header>
+				<hgroup>
+					<h4>Admin panel</h4>
+					<small> Only you can see this.</small>
+				</hgroup>
+			</header>
+			<form id="validate-submission">
+				<label for="submission-comment"
+					>Submission comments</label
+				>
+				<textarea
+					id="submission-comment"
+					name="comment"
+					rows="4"
+					cols="50"
+					placeholder="Write your feedback here. "
+					aria-placeholder="Write public feedback for this submission."
+				></textarea>
+				<small
+					>This will be available to anyone with
+					access to this leaderboard.</small
+				>
+				<div role="group">
+					<button class="outline">Archive</button>
+					<button type="submit">Verify</button>
+				</div>
+			</form>
+			<div role="alert" aria-live="assertive"></div>
+
+			<script>
+				import zod from "zod";
+				import { setupForm } from "@/lib/client/utils";
+				import { verifyScore } from "@/lib/client/formSubmits";
+				setupForm("#validate-submission", {
+					onBusy: "Verifying...",
+
+					schema: zod.any(),
+					onSubmit: async () => {
+						verifyScore();
+						return true;
+					},
+				});
+			</script>
+		</article>
+	</section>
+</PageLayout>

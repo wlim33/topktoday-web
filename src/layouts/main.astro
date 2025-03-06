@@ -1,0 +1,127 @@
+---
+import NewLeaderboardModal from "../components/NewLeaderboardModal.astro";
+const { title, leaderboard, submission } = Astro.props;
+
+const isLoggedIn: boolean =
+	Astro.locals.user !== null && !Astro.locals.user.isAnonymous;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+
+		<title>{title}</title>
+	</head>
+	<body>
+		<div
+			id="frontmatter-store"
+			data-leaderboard={leaderboard}
+			data-submission={submission}
+		>
+		</div>
+		<main class="container">
+			<nav>
+				<ul>
+					<li>
+						<a href="/"
+							><h3>Top K Today</h3></a
+						>
+					</li>
+				</ul>
+				<ul>
+					<li>
+						<button
+							class="outline"
+							id="new-leaderboard-button"
+							>+ New Leaderboard</button
+						>
+					</li>
+
+					<li>
+						<a href="/pricing/">Pricing</a>
+					</li>
+
+					{
+						!isLoggedIn && (
+							<>
+								<li>
+									<a href="/login">
+										Log
+										in
+									</a>
+								</li>
+								<li>
+									<a href="/register/">
+										Register
+									</a>
+								</li>
+							</>
+						)
+					}
+
+					{
+						isLoggedIn && (
+							<li>
+								<a href="/account/">
+									Account
+								</a>
+							</li>
+						)
+					}
+				</ul>
+			</nav>
+
+			<slot />
+		</main>
+
+		<NewLeaderboardModal />
+		<script>
+			import { authClient } from "@/lib/client/auth-client";
+			const session = await authClient.getSession();
+			if (!session.data) {
+				await authClient.signIn.anonymous();
+			}
+			const openModal = document.querySelector(
+				"#new-leaderboard-button",
+			);
+
+			openModal?.addEventListener("click", (e: Event) => {
+				e.preventDefault();
+
+				const modal = document.querySelector(
+					"#new-leaderboard-modal",
+				);
+				modal?.toggleAttribute("open");
+				document.documentElement.classList.add(
+					"modal-is-open",
+				);
+				document.documentElement.classList.add(
+					"modal-is-opening",
+				);
+				document.documentElement.classList.remove(
+					"modal-is-closing",
+				);
+			});
+		</script>
+		<footer class="container">
+			<hr />
+
+			<hgroup>
+				<p>
+					Created by <a href="https://wlim.dev"
+						>William Lim</a
+					>
+				</p>
+				<p>
+					<small>
+						Version <span>0.0.8</span>
+					</small>
+					<p></p>
+				</p>
+			</hgroup>
+		</footer>
+	</body>
+</html>

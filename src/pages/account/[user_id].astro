@@ -1,0 +1,22 @@
+---
+import "@/styles/styles.scss";
+import MainLayout from "@/layouts/main.astro";
+import AccountOverview from "@/components/AccountOverview.astro";
+import { getUserSubmissions, getUserLeaderboards } from "@/lib/server/api";
+
+const { user_id } = Astro.params;
+
+let leaderboards = [];
+let submissions = [];
+
+leaderboards = (await getUserLeaderboards(user_id)).leaderboards;
+submissions = (await getUserSubmissions(user_id)).submissions;
+console.log(submissions);
+---
+
+<MainLayout title="Account">
+	<AccountOverview
+		leaderboards={leaderboards}
+		submissions={submissions}
+	/>
+</MainLayout>

@@ -1,0 +1,41 @@
+---
+import "../styles/styles.scss";
+import MainLayout from "@/layouts/main.astro";
+import AccountLayout from "@/layouts/AccountNavigation.astro";
+import AccountOverview from "@/components/AccountOverview.astro";
+import { getUserLeaderboards, getUserSubmissions } from "@/lib/server/api";
+
+const { user } = Astro.locals;
+const isLoggedIn: boolean = user !== null && !user.isAnonymous;
+let leaderboards = [];
+let submissions = [];
+
+leaderboards = (await getUserLeaderboards(user?.id)).leaderboards;
+submissions = (await getUserSubmissions(user?.id)).submissions;
+---
+
+<MainLayout title="Account">
+	<AccountLayout>
+		<AccountOverview
+			leaderboards={leaderboards}
+			submissions={submissions}
+		/>
+		{
+			isLoggedIn && (
+				<article>
+					<header>
+						<h2>API Key</h2>
+					</header>
+					<strong>API Keys</strong>
+					<ul>
+						<li>
+							<a href="">
+								leaderboard 1
+							</a>
+						</li>
+					</ul>
+				</article>
+			)
+		}
+	</AccountLayout>
+</MainLayout>

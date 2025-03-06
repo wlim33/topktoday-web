@@ -1,16 +1,237 @@
 ---
+import "../styles/styles.scss";
+import MainLayout from "../layouts/main.astro";
 
+var date = new Date();
+var one_day_forward = new Date();
+one_day_forward.setDate(date.getDate() + 1);
+
+one_day_forward.setMilliseconds(0);
+one_day_forward.setSeconds(0);
+date.setMilliseconds(0);
+date.setSeconds(0);
+
+const today = date.toISOString().replace(":00.000Z", "");
+const tomorrow = one_day_forward.toISOString().replace(":00.000Z", "");
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<MainLayout title="Top K Today">
+	<section>
+		<hgroup style="text-align: center;">
+			<h1>Sharable Leaderboards for your Team.</h1>
+			<hr />
+			<h5>Create in seconds – No coding required.</h5>
+			<h5>
+				Share – Celebrate wins and encourage friendly
+				competition with a single link.
+			</h5>
+			<h5>
+				Seamless integrations – set up leaderboards in
+				minutes and watch your team’s motivation soar.
+			</h5>
+			<p>Over 222,712 leaderboards created.</p>
+		</hgroup>
+	</section>
+	<hr />
+
+	<div class="center-container">
+		<section class="centered-card">
+			<div class="grid">
+				<article>
+					<header style="text-align: center;">
+						<h3>
+							Make a new public
+							leaderboard in seconds.
+						</h3>
+					</header>
+
+					<form id="new-leaderboard">
+						<fieldset>
+							<label>
+								Leaderboard
+								Title
+							</label>
+							<input
+								name="title"
+								placeholder="Weekly Bar Trivia Rankings"
+								aria-label="new-leaderboard-title"
+								autocomplete="new-leaderboard-title"
+							/>
+
+							<small
+								id="display-name-helper"
+								>This title will
+								be public.</small
+							>
+
+							<details open>
+								<summary
+									>Advanced
+									options
+									(Optional)</summary
+								>
+
+								<fieldset>
+									<legend>
+										Rank
+										by:
+									</legend>
+									<input
+										type="radio"
+										name="is-highest-score"
+										id="highest-score"
+										checked
+									/>
+									<label
+										for="highest-score"
+										>Highest
+										score</label
+									>
+									<input
+										type="radio"
+										name="is-highest-score"
+										id="lowest-time"
+									/>
+									<label
+										for="lowest-time"
+										>Lowest
+										time</label
+									>
+								</fieldset>
+								<fieldset>
+									<input
+										type="checkbox"
+										id="only-one-submission"
+										name="only-one-submission"
+									/>
+									<label
+										for="only-one-submission"
+										>Players
+										can
+										only
+										show
+										up
+										once
+										on
+										the
+										leaderboard
+									</label>
+								</fieldset>
+
+								<fieldset>
+									<nav>
+										<label
+											>Start
+											accepting
+											<span
+												>submissions</span
+											>
+											at:
+										</label>
+										<label
+										>
+											<input
+												id="start-date-now"
+												name="start-date-now"
+												type="checkbox"
+												role="switch"
+												checked
+											/>
+											Now
+										</label>
+									</nav>
+									<input
+										id="start-datetime"
+										type="datetime-local"
+										name="start-datetime"
+										aria-label="Start datetime local"
+										value={today}
+									/>
+								</fieldset>
+								<fieldset>
+									<nav>
+										<label
+											>Stop
+											accepting
+											<span
+												>submissions</span
+											>
+											after:
+										</label>
+										<label
+										>
+											<input
+												id="end-date-never"
+												name="end-date-never"
+												type="checkbox"
+												role="switch"
+											/>
+											Never
+										</label>
+									</nav>
+
+									<input
+										id="cutoff-datetime"
+										type="datetime-local"
+										name="cutoff-datetime"
+										aria-label="End datetime local"
+										value={tomorrow}
+									/>
+								</fieldset>
+							</details>
+						</fieldset>
+						<button type="submit"
+							>Get Link</button
+						>
+					</form>
+					<div role="alert" aria-live="assertive">
+					</div>
+
+					<script>
+						import {
+							setupForm,
+							hideBasedOn,
+						} from "@/lib/client/utils";
+						import { newLeaderboard } from "@/lib/client/formSubmits";
+						import { newLeaderboardSchema } from "@/lib/client/schemas";
+						import { LEADERBOARD_PAGE_BASE } from "@/lib/client/urls";
+						import { navigate } from "astro:transitions/client";
+
+						hideBasedOn(
+							"#end-date-never",
+							"input#cutoff-datetime",
+						);
+						hideBasedOn(
+							"#start-date-now",
+							"input#start-datetime",
+						);
+
+						setupForm("#new-leaderboard", {
+							onBusy: "Creating...",
+							schema: newLeaderboardSchema,
+							onSubmit: async (
+								submission,
+							) => {
+								console.log(
+									submission,
+								);
+								const id =
+									await newLeaderboard(
+										submission,
+									);
+
+								navigate(
+									`${LEADERBOARD_PAGE_BASE}/${id}`,
+								);
+								return true;
+							},
+						});
+					</script>
+				</article>
+			</div>
+			<footer></footer>
+		</section>
+
+		<div></div>
+	</div></MainLayout
+>

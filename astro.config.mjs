@@ -12,6 +12,11 @@ export default defineConfig({
       external: ["pg"],
     }
   },
+  experimental: {
+    svg: {
+      mode: 'sprite',
+    }
+  },
   adapter: netlify(),
 
 })

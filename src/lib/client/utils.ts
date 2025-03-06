@@ -25,6 +25,38 @@ export function formatTimeAgo(timestamp: string): string {
 	) + " ago"
 }
 
+
+let intervalId: null | ReturnType<typeof setInterval>;
+export function addCarousel(firstWord: HTMLSpanElement, secondWord: HTMLSpanElement) {
+	if (!firstWord || !secondWord) {
+		return
+	}
+	let i: number = 0;
+	if (intervalId) {
+		clearInterval(intervalId);
+		// release our intervalId from the variable
+		intervalId = null;
+	}
+	if (!intervalId) {
+		intervalId = setInterval(() => {
+			let next = getNextText(i)
+			firstWord.innerHTML = next[1]
+			secondWord.innerHTML = next[2]
+			i = next[0];
+		}, 2000);
+	}
+
+
+
+}
+
+const words: [string, string][] = [["fastest speedrunners", "in your video game"], ["top teams", "in your sports league"], ["funniest coworkers", "in your Slack channel"]]
+export function getNextText(current_i: number): [number, string, string] {
+	let next_i = (current_i + 1) % words.length;
+	return [next_i, words[next_i][0], words[next_i][1]]
+
+}
+
 export function hideBasedOn(input_selector: string, target_selector: string, invert: boolean = false) {
 	const input = document.querySelector(input_selector) as HTMLInputElement
 	const target = document.querySelector(target_selector) as HTMLElement
@@ -141,6 +173,15 @@ export const setupForm = (form_id: string, config: Config<Schema>) => {
 				message = error.errors[0].message;
 			} else {
 				message = error.message;
+			}
+
+			form.querySelector("button[type=submit]").textContent = prevText;
+			for (const button of buttons) {
+				button.disabled = false;
+			}
+
+			for (const input of inputs) {
+				input.disabled = false;
 			}
 
 			onError.innerHTML = `<p>${message}</p>`;

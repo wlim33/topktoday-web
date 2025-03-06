@@ -1,18 +1,31 @@
 ---
 const { userID } = Astro.props;
+
+var date = new Date();
+var one_day_forward = new Date();
+one_day_forward.setDate(date.getDate() + 1);
+
+one_day_forward.setMilliseconds(0);
+one_day_forward.setSeconds(0);
+date.setMilliseconds(0);
+date.setSeconds(0);
+
+const today = date.toISOString().replace(":00.000Z", "");
+const tomorrow = one_day_forward.toISOString().replace(":00.000Z", "");
 ---
 
 <dialog id="new-leaderboard-modal" data-user={userID}>
 	<article>
 		<header>
-			<button
+			<a
+				type=""
 				aria-label="Close"
 				class="close-modal"
-				rel="prev"></button>
+				rel="prev"></a>
 			<h4 style="text-align: center;">New Leaderboard</h4>
 		</header>
 
-		<form id="new-leaderboard">
+		<form id="new-leaderboard-modal-form">
 			<fieldset>
 				<label> Leaderboard Title </label>
 				<input
@@ -127,13 +140,13 @@ const { userID } = Astro.props;
 		<script>
 			import {
 				setupForm,
-				getTodayAndTomorrow,
 				hideBasedOn,
 			} from "@/lib/client/utils";
 			import { newLeaderboard } from "@/lib/client/formSubmits";
 			import { newLeaderboardSchema } from "@/lib/client/schemas";
 			import { LEADERBOARD_PAGE_BASE } from "@/lib/client/urls";
 			import { navigate } from "astro:transitions/client";
+
 			const closeModal = () => {
 				const modal = document.querySelector(
 					"#new-leaderboard-modal",
@@ -152,24 +165,10 @@ const { userID } = Astro.props;
 				);
 			};
 
-			const prefill = getTodayAndTomorrow();
-
-			const start_input = document.querySelector(
-				"input#start-datetime",
-			);
-			const stop_input = document.querySelector(
-				"input#cutoff-datetime",
-			);
-			start_input?.setAttribute("min", prefill.today);
-			stop_input?.setAttribute("min", prefill.tomorrow);
-
-			start_input?.setAttribute("value", prefill.today);
-			stop_input?.setAttribute("value", prefill.tomorrow);
-
 			hideBasedOn("#end-date-never", "input#cutoff-datetime");
 			hideBasedOn("#start-date-now", "input#start-datetime");
 
-			setupForm("#new-leaderboard", {
+			setupForm("#new-leaderboard-modal-form", {
 				onBusy: "Creating...",
 				schema: newLeaderboardSchema,
 				onSubmit: async (submission) => {

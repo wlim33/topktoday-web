@@ -25,158 +25,136 @@ try {
 ---
 
 <PageLayout title="Leaderboard" leaderboard={leaderboard_id}>
-	<section id="leaderboard-section" class="container" style="width: 66%;">
-		<nav>
-			<hgroup>
-				<h1>{displayName}</h1>
-				<CopyLink id={leaderboard_id} />
-			</hgroup>
-			<div style="display: flex; align-items: center;">
-				<a
-					type="button"
-					href={`/leaderboard/${leaderboard_id}/submission`}
-					><strong>+ New Submission</strong></a
+	<div class="container-fluid center-container">
+		<section id="leaderboard-section" class="centered-narrow">
+			<nav>
+				<hgroup>
+					<h2>{displayName}</h2>
+					<CopyLink id={leaderboard_id} />
+				</hgroup>
+				<div
+					style="display: flex; align-items: center;"
 				>
-			</div>
-		</nav>
-		<article id="leaderboard-article">
-			<table id="leaderboard-table" is="score-table">
-				<thead>
-					<tr>
-						<th scope="col">Rank</th>
-						<th scope="col">Player</th>
-						<th scope="col">Score</th>
-						<th
-							scope="col"
-							class="row-timestamp"
-							>Date</th
-						>
-					</tr>
-				</thead>
-				<tbody>
-					{
-						leaderboard.scores.map(
-							(
-								score: Entry,
-								idx: number,
-							) => (
-								<tr
-									data-timestamp={
-										score.submitted_at
-									}
-								>
-									<th
-										class="row-rank"
-										scope="row"
+					<a
+						type="button"
+						href={`/leaderboard/${leaderboard_id}/submission`}
+						><strong
+							>+ New Submission</strong
+						></a
+					>
+				</div>
+			</nav>
+			<article id="leaderboard-article">
+				<table id="leaderboard-table" is="score-table">
+					<thead>
+						<tr>
+							<th scope="col">Rank</th
+							>
+							<th scope="col"
+								>Player</th
+							>
+							<th scope="col"
+								>Score</th
+							>
+							<th
+								scope="col"
+								class="row-timestamp"
+								>Date</th
+							>
+						</tr>
+					</thead>
+					<tbody class="leaderboard-body">
+						{
+							leaderboard.scores.map(
+								(
+									score: Entry,
+									idx: number,
+								) => (
+									<tr
+										data-timestamp={
+											score.submitted_at
+										}
 									>
-										{idx +
-											1}
-										{!score.verified && (
-											<sup>
-												*
-											</sup>
-										)}
-									</th>
-									<td class="row-user">
-										<a
-											href={`/account/${score.user.id}`}
+										<th
+											class="row-rank"
+											scope="row"
 										>
-											{
-												score
-													.user
-													.username
-											}
-										</a>
-									</td>
-									<td class="row-score">
-										<a
-											href={`/leaderboard/${leaderboard_id}/submission/${score.id}`}
-										>
-											{
-												score.score
-											}
-										</a>
-									</td>
-									<td class="row-timestamp">
-										{formatTimeAgo(
-											score.submitted_at,
-										)}
-									</td>
-								</tr>
-							),
-						)
-					}
-				</tbody>
-				<tfoot>
-					<tr>
-						<td colspan="4"
-							>Total players: <span
-								id="player-count"
-								>{
-									leaderboard
-										.scores
-										.length
-								}</span
-							></td
-						>
-					</tr>
-				</tfoot>
+											{idx +
+												1}
+											{!score.verified && (
+												<sup>
+													*
+												</sup>
+											)}
+										</th>
+										<td class="row-user">
+											<b
+												href={`/account/${score.user.id}`}
+											>
+												{
+													score
+														.user
+														.username
+												}
+											</b>
+										</td>
+										<td class="row-score">
+											<a
+												href={`/leaderboard/${leaderboard_id}/submission/${score.id}`}
+											>
+												{
+													score.score
+												}
+											</a>
+										</td>
+										<td class="row-timestamp">
+											{formatTimeAgo(
+												score.submitted_at,
+											)}
+										</td>
+									</tr>
+								),
+							)
+						}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="4"
+								>Total
+								submissions: <span
+									id="player-count"
+									>{
+										leaderboard
+											.scores
+											.length
+									}</span
+								></td
+							>
+						</tr>
+					</tfoot>
 
-				<caption></caption>
-			</table>
-			<small>*scores are not verified.</small>
-			<script>
-				const table = document.querySelector(
-					"#leaderboard-table",
-				) as HTMLTableElement;
+					<caption></caption>
+				</table>
+				<small>*scores are not verified.</small>
+			</article>
 
-				function colorRows() {
-					const first =
-						table.tBodies[0].children[0]?.querySelector(
-							".row-rank",
-						);
-					first?.classList.add("gold");
-
-					const second =
-						table.tBodies[0].children[1]?.querySelector(
-							".row-rank",
-						);
-					second?.classList.add("silver");
-
-					const third =
-						table.tBodies[0].children[2]?.querySelector(
-							".row-rank",
-						);
-					third?.classList.add("bronze");
-
-					if (first) {
-						first.innerHTML = `<strong>${first.innerHTML}</strong>`;
-					}
-					if (second) {
-						second.innerHTML = `<strong>${second.innerHTML}</strong>`;
-					}
-					if (third) {
-						third.innerHTML = `<strong>${third.innerHTML}</strong>`;
-					}
+			<hr />
+			<h4>Verifiers</h4>
+			<ul>
+				{
+					verifiers.map((verifier) => (
+						<li>
+							<a
+								href={`/account/${verifier.id}`}
+							>
+								{
+									verifier.username
+								}
+							</a>
+						</li>
+					))
 				}
-				colorRows();
-			</script>
-		</article>
-
-		<hr />
-		<h4>Owners</h4>
-		<ul>
-			{
-				verifiers.map((verifier) => (
-					<li>
-						<a
-							href={`/account/${verifier.id}`}
-						>
-							{verifier.username}
-						</a>
-					</li>
-				))
-			}
-		</ul>
-	</section>
+			</ul>
+		</section>
+	</div>
 </PageLayout>

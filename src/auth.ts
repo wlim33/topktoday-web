@@ -21,6 +21,16 @@ export const auth = betterAuth({
 		//	},
 		//})
 	],
+	socialProviders: {
+		discord: {
+			clientId: import.meta.env.DISCORD_CLIENT_ID as string,
+			clientSecret: import.meta.env.DISCORD_CLIENT_SECRET as string,
+		},
+		google: {
+			clientId: import.meta.env.GOOGLE_CLIENT_ID as string,
+			clientSecret: import.meta.env.GOOGLE_CLIENT_SECRET as string,
+		},
+	},
 	session: {
 		cookieCache: {
 			enabled: true,

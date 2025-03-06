@@ -1,0 +1,49 @@
+---
+import AppleLogo from "@/components/icons/apple.svg";
+import GoogleLogo from "@/components/icons/google.svg";
+import DiscordLogo from "@/components/icons/discord.svg";
+import TwitchLogo from "@/components/icons/twitch.svg";
+import GithubLogo from "@/components/icons/github.svg";
+---
+
+<>
+	<fieldset class="grid" id="social-logins">
+		<button class="outline" id="google">
+			<GoogleLogo size={24} /></button
+		>
+
+		<button class="outline" id="apple">
+			<AppleLogo size={24} /></button
+		>
+		<button class="outline" id="twitch"
+			><TwitchLogo size={24} /></button
+		>
+
+		<button class="outline" id="discord"
+			><DiscordLogo size={24} /></button
+		>
+		<button class="outline" id="github"
+			><GithubLogo size={24} /></button
+		>
+	</fieldset>
+	<script>
+		import { authClient } from "@/lib/client/auth-client";
+		document.addEventListener("astro:page-load", () => {
+			document.querySelectorAll(
+				"#social-logins>button",
+			).forEach((button) => {
+				button.addEventListener("click", (event) => {
+					event.preventDefault();
+					authClient.signIn.social({
+						provider: button.id as
+							| "github"
+							| "discord"
+							| "twitch"
+							| "google"
+							| "apple",
+					});
+				});
+			});
+		});
+	</script>
+</>

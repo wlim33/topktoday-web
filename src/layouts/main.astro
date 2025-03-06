@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import NewLeaderboardModal from "../components/NewLeaderboardModal.astro";
 const { title, leaderboard, submission } = Astro.props;
 
@@ -6,13 +7,13 @@ const isLoggedIn: boolean =
 	Astro.locals.user !== null && !Astro.locals.user.isAnonymous;
 ---
 
-<html lang="en">
+<html lang="en" transition:name="slide">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-
+		<ClientRouter />
 		<title>{title}</title>
 	</head>
 	<body>
@@ -22,7 +23,7 @@ const isLoggedIn: boolean =
 			data-submission={submission}
 		>
 		</div>
-		<main class="container">
+		<main class="container" style="min-height: 100vh;">
 			<nav>
 				<ul>
 					<li>
@@ -84,25 +85,31 @@ const isLoggedIn: boolean =
 			if (!session.data) {
 				await authClient.signIn.anonymous();
 			}
-			const openModal = document.querySelector(
-				"#new-leaderboard-button",
-			);
 
-			openModal?.addEventListener("click", (e: Event) => {
-				e.preventDefault();
+			document.addEventListener("astro:page-load", () => {
+				const openModal = document.querySelector(
+					"#new-leaderboard-button",
+				);
+				openModal?.addEventListener(
+					"click",
+					(e: Event) => {
+						e.preventDefault();
 
-				const modal = document.querySelector(
-					"#new-leaderboard-modal",
-				);
-				modal?.toggleAttribute("open");
-				document.documentElement.classList.add(
-					"modal-is-open",
-				);
-				document.documentElement.classList.add(
-					"modal-is-opening",
-				);
-				document.documentElement.classList.remove(
-					"modal-is-closing",
+						const modal =
+							document.querySelector(
+								"#new-leaderboard-modal",
+							);
+						modal?.toggleAttribute("open");
+						document.documentElement.classList.add(
+							"modal-is-open",
+						);
+						document.documentElement.classList.add(
+							"modal-is-opening",
+						);
+						document.documentElement.classList.remove(
+							"modal-is-closing",
+						);
+					},
 				);
 			});
 		</script>

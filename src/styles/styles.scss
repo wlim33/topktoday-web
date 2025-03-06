@@ -11,7 +11,7 @@
   /* Original: 1rem */
   --pico-form-element-spacing-horizontal: 1.0rem;
   /* Original: 1.25rem */
-  --pico-border-radius: 0.175rem;
+  --pico-border-radius: 0.2rem;
   /* Original: 0.25rem */
 }
 
@@ -38,12 +38,34 @@
     --pico-font-size: 87.5%;
     /* Original: 118.75% */
   }
+
+  .centered-narrow {
+    width: 60%
+  }
+
+  .centered-card {
+    width: 85%
+  }
+
+
+  .center-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+  }
 }
 
 @media (min-width: 1280px) {
   :root {
     --pico-font-size: 87.5%;
     /* Original: 125% */
+  }
+
+  .centered-narrow {
+    width: 50%
   }
 
   .centered-card {
@@ -108,18 +130,24 @@ article>footer {
   animation: enter 0.3s ease;
 }
 
-.gold {
-  color: $amber-350;
-}
-
-.silver {
-  color: $slate-350;
-}
-
-.bronze {
-  color: $pumpkin-600;
-}
 
 .row-timestamp {
   text-align: center;
+}
+
+tr:nth-child(1)>th.row-rank {
+  color: $amber-350;
+  font-weight: bolder;
+}
+
+tr:nth-child(2)>th.row-rank {
+  color: $slate-350;
+  font-weight: bolder;
+}
+
+tr:nth-child(3)>th.row-rank {
+  color: $pumpkin-600;
+
+  font-weight: bolder;
+
 }

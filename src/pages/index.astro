@@ -17,218 +17,255 @@ const tomorrow = one_day_forward.toISOString().replace(":00.000Z", "");
 
 <MainLayout title="Top K Today">
 	<section>
-		<hgroup style="text-align: center;">
-			<h1>Sharable Leaderboards for your Team.</h1>
-			<hr />
-			<h5>Create in seconds – No coding required.</h5>
-			<h5>
-				Share – Celebrate wins and encourage friendly
-				competition with a single link.
-			</h5>
-			<h5>
-				Seamless integrations – set up leaderboards in
-				minutes and watch your team’s motivation soar.
-			</h5>
-			<p>Over 222,712 leaderboards created.</p>
+		<hgroup>
+			<h1 style="font-size: 3em;">
+				Keep track of the <span id="title-best-subject"
+					>top coders</span
+				>
+				<span id="title-group-subject">
+					in your hackathon event</span
+				>.
+			</h1>
+			<h3>Create in seconds – No coding required.</h3>
+			<h3>
+				Share – Encourage friendly competition with a
+				single link.
+			</h3>
+			<p>Over 222,000 leaderboards created.</p>
 		</hgroup>
-	</section>
-	<hr />
+		<hr />
 
-	<div class="center-container">
-		<section class="centered-card">
-			<div class="grid">
-				<article>
-					<header style="text-align: center;">
-						<h3>
-							Make a new public
-							leaderboard in seconds.
-						</h3>
-					</header>
+		<div class="center-container">
+			<section class="centered-card">
+				<div class="grid">
+					<article>
+						<header
+							style="text-align: center; "
+						>
+							<h3>
+								Make a new
+								public
+								leaderboard in
+								seconds.
+							</h3>
+						</header>
 
-					<form id="new-leaderboard">
-						<fieldset>
-							<label>
-								Leaderboard
-								Title
-							</label>
-							<input
-								name="title"
-								placeholder="Weekly Bar Trivia Rankings"
-								aria-label="new-leaderboard-title"
-								autocomplete="new-leaderboard-title"
-							/>
+						<form id="new-leaderboard">
+							<fieldset>
+								<label>
+									Leaderboard
+									Title
+								</label>
+								<input
+									name="title"
+									placeholder="Weekly Bar Trivia Rankings"
+									aria-label="new-leaderboard-title"
+									autocomplete="new-leaderboard-title"
+								/>
 
-							<small
-								id="display-name-helper"
-								>This title will
-								be public.</small
-							>
-
-							<details open>
-								<summary
-									>Advanced
-									options
-									(Optional)</summary
+								<small
+									id="display-name-helper"
+									>This
+									title
+									will be
+									public.</small
 								>
 
-								<fieldset>
-									<legend>
-										Rank
-										by:
-									</legend>
-									<input
-										type="radio"
-										name="is-highest-score"
-										id="highest-score"
-										checked
-									/>
-									<label
-										for="highest-score"
-										>Highest
-										score</label
+								<details open>
+									<summary
+										>Advanced
+										options
+										(Optional)</summary
 									>
-									<input
-										type="radio"
-										name="is-highest-score"
-										id="lowest-time"
-									/>
-									<label
-										for="lowest-time"
-										>Lowest
-										time</label
+
+									<fieldset
 									>
-								</fieldset>
-								<fieldset>
-									<input
-										type="checkbox"
-										id="only-one-submission"
-										name="only-one-submission"
-									/>
-									<label
-										for="only-one-submission"
-										>Players
-										can
-										only
-										show
-										up
-										once
-										on
-										the
-										leaderboard
-									</label>
-								</fieldset>
-
-								<fieldset>
-									<nav>
-										<label
-											>Start
-											accepting
-											<span
-												>submissions</span
-											>
-											at:
-										</label>
-										<label
+										<legend
 										>
-											<input
-												id="start-date-now"
-												name="start-date-now"
-												type="checkbox"
-												role="switch"
-												checked
-											/>
-											Now
-										</label>
-									</nav>
-									<input
-										id="start-datetime"
-										type="datetime-local"
-										name="start-datetime"
-										aria-label="Start datetime local"
-										value={today}
-									/>
-								</fieldset>
-								<fieldset>
-									<nav>
+											Rank
+											by:
+										</legend>
+										<input
+											type="radio"
+											name="is-highest-score"
+											id="highest-score"
+											checked
+										/>
 										<label
-											>Stop
-											accepting
-											<span
-												>submissions</span
-											>
-											after:
-										</label>
-										<label
+											for="highest-score"
+											>Highest
+											score</label
 										>
-											<input
-												id="end-date-never"
-												name="end-date-never"
-												type="checkbox"
-												role="switch"
-											/>
-											Never
+										<input
+											type="radio"
+											name="is-highest-score"
+											id="lowest-time"
+										/>
+										<label
+											for="lowest-time"
+											>Lowest
+											time</label
+										>
+									</fieldset>
+									<fieldset
+									>
+										<input
+											type="checkbox"
+											id="only-one-submission"
+											name="only-one-submission"
+										/>
+										<label
+											for="only-one-submission"
+											>Players
+											can
+											only
+											show
+											up
+											once
+											on
+											the
+											leaderboard
 										</label>
-									</nav>
+									</fieldset>
 
-									<input
-										id="cutoff-datetime"
-										type="datetime-local"
-										name="cutoff-datetime"
-										aria-label="End datetime local"
-										value={tomorrow}
-									/>
-								</fieldset>
-							</details>
-						</fieldset>
-						<button type="submit"
-							>Get Link</button
+									<fieldset
+									>
+										<nav
+										>
+											<label
+												>Start
+												accepting
+												<span
+													>submissions</span
+												>
+												at:
+											</label>
+											<label
+											>
+												<input
+													id="start-date-now"
+													name="start-date-now"
+													type="checkbox"
+													role="switch"
+													checked
+												/>
+												Now
+											</label>
+										</nav>
+										<input
+											id="start-datetime"
+											type="datetime-local"
+											name="start-datetime"
+											aria-label="Start datetime local"
+											value={today}
+										/>
+									</fieldset>
+									<fieldset
+									>
+										<nav
+										>
+											<label
+												>Stop
+												accepting
+												<span
+													>submissions</span
+												>
+												after:
+											</label>
+											<label
+											>
+												<input
+													id="end-date-never"
+													name="end-date-never"
+													type="checkbox"
+													role="switch"
+												/>
+												Never
+											</label>
+										</nav>
+
+										<input
+											id="cutoff-datetime"
+											type="datetime-local"
+											name="cutoff-datetime"
+											aria-label="End datetime local"
+											value={tomorrow}
+										/>
+									</fieldset>
+								</details>
+							</fieldset>
+							<button type="submit"
+								>Get Link</button
+							>
+						</form>
+						<div
+							role="alert"
+							aria-live="assertive"
 						>
-					</form>
-					<div role="alert" aria-live="assertive">
-					</div>
+						</div>
 
-					<script>
-						import {
-							setupForm,
-							hideBasedOn,
-						} from "@/lib/client/utils";
-						import { newLeaderboard } from "@/lib/client/formSubmits";
-						import { newLeaderboardSchema } from "@/lib/client/schemas";
-						import { LEADERBOARD_PAGE_BASE } from "@/lib/client/urls";
-						import { navigate } from "astro:transitions/client";
+						<script>
+							import {
+								setupForm,
+								hideBasedOn,
+								addCarousel,
+							} from "@/lib/client/utils";
+							import { newLeaderboard } from "@/lib/client/formSubmits";
+							import { newLeaderboardSchema } from "@/lib/client/schemas";
+							import { LEADERBOARD_PAGE_BASE } from "@/lib/client/urls";
+							import { navigate } from "astro:transitions/client";
 
-						hideBasedOn(
-							"#end-date-never",
-							"input#cutoff-datetime",
-						);
-						hideBasedOn(
-							"#start-date-now",
-							"input#start-datetime",
-						);
+							document.addEventListener(
+								"astro:page-load",
+								() => {
+									addCarousel(
+										document.querySelector(
+											"#title-best-subject",
+										),
 
-						setupForm("#new-leaderboard", {
-							onBusy: "Creating...",
-							schema: newLeaderboardSchema,
-							onSubmit: async (
-								submission,
-							) => {
-								const id =
-									await newLeaderboard(
-										submission,
+										document.querySelector(
+											"#title-group-subject",
+										),
+									);
+									hideBasedOn(
+										"#end-date-never",
+										"input#cutoff-datetime",
+									);
+									hideBasedOn(
+										"#start-date-now",
+										"input#start-datetime",
 									);
 
-								navigate(
-									`${LEADERBOARD_PAGE_BASE}/${id}`,
-								);
-								return true;
-							},
-						});
-					</script>
-				</article>
-			</div>
-			<footer></footer>
-		</section>
+									setupForm(
+										"#new-leaderboard",
+										{
+											onBusy: "Creating...",
+											schema: newLeaderboardSchema,
+											onSubmit: async (
+												submission,
+											) => {
+												const id =
+													await newLeaderboard(
+														submission,
+													);
 
-		<div></div>
-	</div></MainLayout
->
+												await navigate(
+													`${LEADERBOARD_PAGE_BASE}/${id}`,
+												);
+
+												return true;
+											},
+										},
+									);
+								},
+							);
+						</script>
+					</article>
+				</div>
+				<footer></footer>
+			</section>
+
+			<div></div>
+		</div>
+	</section>
+</MainLayout>

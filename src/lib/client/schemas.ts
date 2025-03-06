@@ -74,7 +74,7 @@ export const loginForm = zod.object({
 			.max(100)
 			.trim(),
 	]),
-	password: zod.string(),
+	password: zod.string().min(8, "Password must be at least 8 characters.").max(64, "Password cannot be no more than 50 characters."),
 	rememberme: zod.boolean().optional(),
 })
 

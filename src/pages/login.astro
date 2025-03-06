@@ -1,6 +1,7 @@
 ---
 import "../styles/styles.scss";
 import MainLayout from "../layouts/main.astro";
+import SocialLoginButtons from "@/components/SocialLoginButtons.astro";
 ---
 
 <MainLayout title="Register">
@@ -29,47 +30,50 @@ import MainLayout from "../layouts/main.astro";
 						<input
 							type="checkbox"
 							name="rememberme"
-						/>
-						Remember me
+						/> Remember me
 					</label>
 				</fieldset>
 				<button type="submit">Sign In</button>
 			</form>
-
 			<button
 				id="register-button"
 				style="width: 100%;"
 				class="outline">Create a new account</button
 			>
-
 			<hr />
 			<div role="alert" aria-live="assertive"></div>
+			<footer>
+				<SocialLoginButtons />
+			</footer>
 		</article>
 		<script>
 			import { setupForm } from "@/lib/client/utils";
 			import { loginForm } from "@/lib/client/schemas";
 			import { authClient } from "@/lib/client/auth-client";
-
-			setupForm("#signin-form", {
-				onBusy: "Signing in...",
-				schema: loginForm,
-				onSubmit: async (submission: {
-					email: string;
-					password: string;
-					rememberme: boolean;
-				}) => {
-					const response =
-						await authClient.signIn.email({
-							email: submission.email,
-							password: submission.password,
-							rememberMe: submission.rememberme,
-						});
-					if (response.error) {
-						return response.error
-							.message as string;
-					}
-					return true;
-				},
+			document.addEventListener("astro:page-load", () => {
+				setupForm("#signin-form", {
+					onBusy: "Signing in...",
+					schema: loginForm,
+					onSubmit: async (submission: {
+						email: string;
+						password: string;
+						rememberme: boolean;
+					}) => {
+						const response =
+							await authClient.signIn.email(
+								{
+									email: submission.email,
+									password: submission.password,
+									rememberMe: submission.rememberme,
+								},
+							);
+						if (response.error) {
+							return response.error
+								.message as string;
+						}
+						return true;
+					},
+				});
 			});
 		</script>
 	</section>

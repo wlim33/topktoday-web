@@ -1,5 +1,7 @@
 ---
 import "@/styles/styles.scss";
+
+import CopyLink from "@/components/CopyLink.astro";
 import PageLayout from "@/layouts/main.astro";
 import { getLeaderboardName } from "@/lib/server/api";
 
@@ -16,89 +18,120 @@ try {
 ---
 
 <PageLayout title="New Submission" leaderboard={leaderboard_id}>
-	<div class="container" style="width: 50%;">
-		<article>
-			<header>
-				<nav>
-					<h2>
-						Submit your score for <a
-							href={`/leaderboard/${leaderboard_id}`}
-							>{displayName}</a
+	<div class="container-fluid center-container">
+		<section class="centered-card">
+			<hgroup>
+				<a href={`/leaderboard/${leaderboard_id}`}
+					><h2>{displayName}</h2>
+				</a>
+				<p>
+					<CopyLink id={leaderboard_id} />
+				</p>
+			</hgroup>
+			<article>
+				<header>
+					<hgroup>
+						<h3>New Score Submission</h3>
+					</hgroup>
+				</header>
+
+				<form id="new-submission-form">
+					<fieldset>
+						<label
+							for="new-submission-score"
+							>Score</label
 						>
-					</h2>
-				</nav>
-			</header>
+						<input
+							id="new-submission-score"
+							name="score"
+							placeholder="90000"
+							aria-label="submission-score"
+							type="number"
+							step="0.0001"
+						/>
+						<label for="new-submission-link"
+							>Link attachment</label
+						>
+						<input
+							id="new-submission-link"
+							name="link"
+							placeholder="https://www.youtube.com/watch?v=kdKFyHPXdfY"
+							aria-label="anonymous-submission-link"
+							autocomplete="display-name"
+							type="url"
+						/>
+						<small>
+							This link will be
+							available to anyone with
+							access to this
+							leaderboard.
+						</small>
+					</fieldset>
 
-			<form id="new-submission-form">
-				<fieldset>
-					<label for="new-submission-link"
-						>Link attachment</label
+					<button type="submit"
+						>Submit for validation</button
 					>
-					<input
-						id="new-submission-link"
-						name="link"
-						placeholder="https://www.youtube.com/watch?v=kdKFyHPXdfY"
-						aria-label="anonymous-submission-link"
-						autocomplete="display-name"
-						type="url"
-					/>
-					<small>
-						This link will be available to
-						anyone with access to this
-						leaderboard.
-					</small>
 
-					<label for="new-submission-score"
-						>Score</label
-					>
-					<input
-						id="new-submission-score"
-						name="score"
-						placeholder="90000"
-						aria-label="submission-score"
-						type="number"
-						step="0.0001"
-					/>
-				</fieldset>
+					<span>
+						<a
+							href="/login"
+							id="login-link"
+							style="cursor: pointer;"
+							>Log in
+						</a> or <a
+							href="/register"
+							id="register-link"
+							style="cursor: pointer;"
+							>register an account</a
+						> to customize your display name.
+					</span>
+				</form>
+				<div role="alert" aria-live="assertive"></div>
+				<script>
+					import { setupForm } from "@/lib/client/utils";
+					import { addScore } from "@/lib/client/formSubmits";
+					import { getPageData } from "@/lib/client/utils";
+					import { newSubmission } from "@/lib/client/schemas";
+					import { navigate } from "astro:transitions/client";
 
-				<button type="submit"
-					>Submit for validation</button
-				>
-			</form>
-			<div role="alert" aria-live="assertive"></div>
-			<script>
-				import { setupForm } from "@/lib/client/utils";
-				import { addScore } from "@/lib/client/formSubmits";
-				import { getPageData } from "@/lib/client/utils";
-				import { newSubmission } from "@/lib/client/schemas";
-				import { navigate } from "astro:transitions/client";
+					document.addEventListener(
+						"astro:page-load",
+						() => {
+							setupForm(
+								"#new-submission-form",
+								{
+									onBusy: "Updating...",
+									schema: newSubmission,
+									emitEvent: new CustomEvent(
+										"update",
+										{
+											bubbles: true,
+										},
+									),
+									onSubmit: async (submission: {
+										file: File;
+										link: string;
+										score: number;
+									}) => {
+										await addScore(
+											submission.score,
+											submission.link,
+										);
 
-				setupForm("#new-submission-form", {
-					onBusy: "Updating...",
-					schema: newSubmission,
-					emitEvent: new CustomEvent("update", {
-						bubbles: true,
-					}),
-					onSubmit: async (submission: {
-						file: File;
-						link: string;
-						score: number;
-					}) => {
-						await addScore(
-							submission.score,
-							submission.link,
-						);
-
-						navigate(
-							`/leaderboard/${
-								getPageData()
-									.leaderboard
-							}`,
-						);
-						return true;
-					},
-				});
-			</script>
-		</article>
+										navigate(
+											`/leaderboard/${
+												getPageData()
+													.leaderboard
+											}`,
+										);
+										return true;
+									},
+								},
+							);
+						},
+					);
+				</script>
+			</article>
+		</section>
 	</div>
 </PageLayout>

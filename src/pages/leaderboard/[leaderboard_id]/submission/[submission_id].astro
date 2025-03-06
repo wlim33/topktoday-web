@@ -1,5 +1,6 @@
 ---
 import "@/styles/styles.scss";
+import CopyLink from "@/components/CopyLink.astro";
 import PageLayout from "@/layouts/main.astro";
 import { getLeaderboardName } from "@/lib/server/api";
 const { leaderboard_id, submission_id } = Astro.params;
@@ -16,28 +17,19 @@ try {
 	leaderboard={leaderboard_id}
 	submission={submission_id}
 >
-	<section class="container" style="width: 33%;">
-		<article>
-			<nav>
-				<hgroup>
-					<h2>
-						submission: {submission_id}
-					</h2>
-					<h3>Pending Verification</h3>
-				</hgroup>
-				<h4>
-					Leaderboard: {displayName}
-				</h4>
-			</nav>
-		</article>
+	<section class="container">
+		<hgroup>
+			<a href={`/leaderboard/${leaderboard_id}`}
+				><h2>{displayName}</h2>
+			</a>
+
+			<p>aoirsen</p>
+			<p>
+				<CopyLink id={leaderboard_id} />
+			</p>
+		</hgroup>
 		<hr />
 		<article>
-			<header>
-				<hgroup>
-					<h4>Admin panel</h4>
-					<small> Only you can see this.</small>
-				</hgroup>
-			</header>
 			<form id="validate-submission">
 				<label for="submission-comment"
 					>Submission comments</label
@@ -65,15 +57,24 @@ try {
 				import zod from "zod";
 				import { setupForm } from "@/lib/client/utils";
 				import { verifyScore } from "@/lib/client/formSubmits";
-				setupForm("#validate-submission", {
-					onBusy: "Verifying...",
 
-					schema: zod.any(),
-					onSubmit: async () => {
-						verifyScore();
-						return true;
+				document.addEventListener(
+					"astro:page-load",
+					() => {
+						setupForm(
+							"#validate-submission",
+							{
+								onBusy: "Verifying...",
+
+								schema: zod.any(),
+								onSubmit: async () => {
+									verifyScore();
+									return true;
+								},
+							},
+						);
 					},
-				});
+				);
 			</script>
 		</article>
 	</section>

@@ -1,4 +1,4 @@
-# Web application for www.topktoday.dev
+# Web application for topktoday
 Create and share realtime leaderboards.
 
 

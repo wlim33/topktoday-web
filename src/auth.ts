@@ -2,13 +2,9 @@ import { betterAuth } from "better-auth";
 import { username } from "better-auth/plugins"
 import { anonymous } from "better-auth/plugins"
 import { usernameSchema } from "@/lib/server/schemas";
-import { linkAnonymousAccount } from "@/lib/server/api";
-import * as pg from 'pg'
-const { Pool } = pg
+import pg from 'pg';
 
-export const db = new Pool({
-	connectionString: import.meta.env.DB_URL
-})
+const { Pool } = pg;
 
 export const auth = betterAuth({
 	plugins: [
@@ -34,5 +30,8 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true
 	},
-	database: db,
+	database: new Pool({
+		connectionString: import.meta.env.DB_URL
+	})
+	,
 })

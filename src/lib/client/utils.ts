@@ -88,7 +88,6 @@ export const setupForm = (form_id: string, config: Config<Schema>) => {
 
 		const buttons = form.querySelectorAll("button");
 		const inputs = form.querySelectorAll("input, textarea, select");
-		console.log(inputs)
 		for (const input of inputs) {
 			if (input.getAttribute("type") === "radio" || input.getAttribute("type") === "checkbox") {
 				data[input.id] = input.checked
@@ -97,10 +96,8 @@ export const setupForm = (form_id: string, config: Config<Schema>) => {
 		}
 		const prevText = form.querySelector("button[type=submit]")?.textContent;
 
-		console.log(data)
 		try {
 			const parsed = schema.parse(data);
-			console.log(parsed)
 			for (const button of buttons) {
 				button.disabled = true;
 			}
@@ -140,7 +137,6 @@ export const setupForm = (form_id: string, config: Config<Schema>) => {
 			let message = error.message;
 
 			if (error.errors && error.errors.length) {
-				console.log(error.errors[0].path[0])
 				form.querySelector(`[name="${error.errors[0].path[0]}"]`).focus();
 				message = error.errors[0].message;
 			} else {
@@ -240,7 +236,6 @@ export type PageData = {
 export function getPageData(): PageData {
 	const pageData: PageData = { leaderboard: "", submission: "" }
 	const data_elem: HTMLElement | null = document.querySelector('#frontmatter-store')
-	console.log(data_elem)
 	if (data_elem && data_elem.dataset && data_elem.dataset.leaderboard) {
 		pageData.leaderboard = data_elem.dataset.leaderboard
 	} else {

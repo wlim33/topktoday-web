@@ -64,7 +64,6 @@ import MainLayout from "../layouts/main.astro";
 							password: submission.password,
 							rememberMe: submission.rememberme,
 						});
-					console.log("signing in")
 					if (response.error) {
 						return response.error
 							.message as string;

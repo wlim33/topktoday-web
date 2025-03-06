@@ -173,7 +173,6 @@ const { userID } = Astro.props;
 				onBusy: "Creating...",
 				schema: newLeaderboardSchema,
 				onSubmit: async (submission) => {
-					console.log(submission);
 					const id =
 						await newLeaderboard(
 							submission,

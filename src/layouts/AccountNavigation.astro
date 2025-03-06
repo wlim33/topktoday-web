@@ -9,7 +9,6 @@ let billing_portal_link = "https://topktoday.lemonsqueezy.com/billing";
 if (customer_id) {
 	const { data } = await getCustomer(customer_id);
 
-	console.log(data);
 	if (
 		data &&
 		data.attributes &&

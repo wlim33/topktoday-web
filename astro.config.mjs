@@ -1,14 +1,16 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import netlify from '@astrojs/netlify/functions';
 
 
 export default defineConfig({
   output: 'server',
   vite: {
-    plugins: [nodePolyfills()]
+    ssr: {
+      // Example: Force a broken package to skip SSR processing, if needed
+      external: ["pg"],
+    }
   },
   adapter: netlify({ edgeMiddleware: true }),
 

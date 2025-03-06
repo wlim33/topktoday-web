@@ -3,7 +3,7 @@ import { username } from "better-auth/plugins"
 import { anonymous } from "better-auth/plugins"
 import { usernameSchema } from "@/lib/server/schemas";
 import { linkAnonymousAccount } from "@/lib/server/api";
-import pg from "pg";
+import pg from "node:pg";
 
 export const db = new pg.Pool({
 	connectionString: import.meta.env.DB_URL

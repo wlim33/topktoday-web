@@ -1,0 +1,48 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@keyframes enter {
+  from {
+    transform: translateY(-0.2rem);
+    opacity: 0.5;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+[role="alert"]>* {
+  background: red;
+  padding: 1rem;
+  animation-name: enter;
+  animation-duration: .25s !important;
+}
+
+.switch-text {
+  animation-name: enter;
+  animation-duration: .25s !important;
+}
+
+.row-timestamp {
+  text-align: center;
+}
+
+tr:nth-child(1)>th.row-rank {
+  color: gold;
+  font-weight: bolder;
+}
+
+tr:nth-child(2)>th.row-rank {
+  color: silver;
+  font-weight: bolder;
+}
+
+tr:nth-child(3)>th.row-rank {
+  color: bronze;
+
+  font-weight: bolder;
+
+}

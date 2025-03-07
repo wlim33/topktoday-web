@@ -1,271 +1,68 @@
 ---
-import "../styles/styles.scss";
 import MainLayout from "../layouts/main.astro";
-
-var date = new Date();
-var one_day_forward = new Date();
-one_day_forward.setDate(date.getDate() + 1);
-
-one_day_forward.setMilliseconds(0);
-one_day_forward.setSeconds(0);
-date.setMilliseconds(0);
-date.setSeconds(0);
-
-const today = date.toISOString().replace(":00.000Z", "");
-const tomorrow = one_day_forward.toISOString().replace(":00.000Z", "");
+import NewLeaderboardForm from "@/components/NewLeaderboardForm.astro";
 ---
 
 <MainLayout title="Top K Today">
-	<section>
-		<hgroup>
-			<h1 style="font-size: 3em;">
-				Keep track of the <span id="title-best-subject"
-					>top coders</span
-				>
-				<span id="title-group-subject">
-					in your hackathon event</span
-				>.
-			</h1>
-			<h3>Create in seconds – No coding required.</h3>
-			<h3>
-				Share – Encourage friendly competition with a
-				single link.
-			</h3>
-			<p>Over 222,000 leaderboards created.</p>
-		</hgroup>
-		<hr />
-
-		<div class="center-container">
-			<section class="centered-card">
-				<div class="grid">
-					<article>
-						<header
-							style="text-align: center; "
-						>
-							<h3>
-								Make a new
-								public
-								leaderboard in
-								seconds.
-							</h3>
-						</header>
-
-						<form id="new-leaderboard">
-							<fieldset>
-								<label>
-									Leaderboard
-									Title
-								</label>
-								<input
-									name="title"
-									placeholder="Weekly Bar Trivia Rankings"
-									aria-label="new-leaderboard-title"
-									autocomplete="new-leaderboard-title"
-								/>
-
-								<small
-									id="display-name-helper"
-									>This
-									title
-									will be
-									public.</small
-								>
-
-								<details open>
-									<summary
-										>Advanced
-										options
-										(Optional)</summary
-									>
-
-									<fieldset
-									>
-										<legend
-										>
-											Rank
-											by:
-										</legend>
-										<input
-											type="radio"
-											name="is-highest-score"
-											id="highest-score"
-											checked
-										/>
-										<label
-											for="highest-score"
-											>Highest
-											score</label
-										>
-										<input
-											type="radio"
-											name="is-highest-score"
-											id="lowest-time"
-										/>
-										<label
-											for="lowest-time"
-											>Lowest
-											time</label
-										>
-									</fieldset>
-									<fieldset
-									>
-										<input
-											type="checkbox"
-											id="only-one-submission"
-											name="only-one-submission"
-										/>
-										<label
-											for="only-one-submission"
-											>Players
-											can
-											only
-											show
-											up
-											once
-											on
-											the
-											leaderboard
-										</label>
-									</fieldset>
-
-									<fieldset
-									>
-										<nav
-										>
-											<label
-												>Start
-												accepting
-												<span
-													>submissions</span
-												>
-												at:
-											</label>
-											<label
-											>
-												<input
-													id="start-date-now"
-													name="start-date-now"
-													type="checkbox"
-													role="switch"
-													checked
-												/>
-												Now
-											</label>
-										</nav>
-										<input
-											id="start-datetime"
-											type="datetime-local"
-											name="start-datetime"
-											aria-label="Start datetime local"
-											value={today}
-										/>
-									</fieldset>
-									<fieldset
-									>
-										<nav
-										>
-											<label
-												>Stop
-												accepting
-												<span
-													>submissions</span
-												>
-												after:
-											</label>
-											<label
-											>
-												<input
-													id="end-date-never"
-													name="end-date-never"
-													type="checkbox"
-													role="switch"
-												/>
-												Never
-											</label>
-										</nav>
-
-										<input
-											id="cutoff-datetime"
-											type="datetime-local"
-											name="cutoff-datetime"
-											aria-label="End datetime local"
-											value={tomorrow}
-										/>
-									</fieldset>
-								</details>
-							</fieldset>
-							<button type="submit"
-								>Get Link</button
-							>
-						</form>
-						<div
-							role="alert"
-							aria-live="assertive"
-						>
-						</div>
-
-						<script>
-							import {
-								setupForm,
-								hideBasedOn,
-								addCarousel,
-							} from "@/lib/client/utils";
-							import { newLeaderboard } from "@/lib/client/formSubmits";
-							import { newLeaderboardSchema } from "@/lib/client/schemas";
-							import { LEADERBOARD_PAGE_BASE } from "@/lib/client/urls";
-							import { navigate } from "astro:transitions/client";
-
-							document.addEventListener(
-								"astro:page-load",
-								() => {
-									addCarousel(
-										document.querySelector(
-											"#title-best-subject",
-										),
-
-										document.querySelector(
-											"#title-group-subject",
-										),
-									);
-									hideBasedOn(
-										"#end-date-never",
-										"input#cutoff-datetime",
-									);
-									hideBasedOn(
-										"#start-date-now",
-										"input#start-datetime",
-									);
-
-									setupForm(
-										"#new-leaderboard",
-										{
-											onBusy: "Creating...",
-											schema: newLeaderboardSchema,
-											onSubmit: async (
-												submission,
-											) => {
-												const id =
-													await newLeaderboard(
-														submission,
-													);
-
-												await navigate(
-													`${LEADERBOARD_PAGE_BASE}/${id}`,
-												);
-
-												return true;
-											},
-										},
-									);
-								},
-							);
-						</script>
-					</article>
+	<script>
+		import "cally";
+	</script>
+	<div class="hero bg-base-200 min-h-screen">
+		<div class="hero-content flex-col lg:flex-row-reverse">
+			<div class="text-center lg:text-left mx-2 xl:mb-64">
+				<h1 class="text-5xl font-bold">
+					Make a daily leaderboard in seconds.
+				</h1>
+				<p class="py-6 text-xl">
+					Keep track of the <span
+						id="title-best-subject"
+						class="switch-text"
+						>top coders</span
+					>
+					<span
+						id="title-group-subject"
+						class="switch-text"
+					>
+						in your hackathon event</span
+					>.
+				</p>
+			</div>
+			<div
+				class="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl mx-2 xl:mb-64"
+			>
+				<div class="card-body">
+					<NewLeaderboardForm />
 				</div>
-				<footer></footer>
-			</section>
-
-			<div></div>
+			</div>
 		</div>
-	</section>
-</MainLayout>
+		<script>
+			import { addCarousel } from "@/lib/client/utils";
+
+			let interval_id: null | ReturnType<typeof setInterval>;
+			function init() {
+				interval_id = addCarousel(
+					interval_id,
+					"title-best-subject",
+					"title-group-subject",
+				);
+			}
+			document.addEventListener(
+				"astro:before-swap",
+				() => {
+					console.log("before swap");
+					if (interval_id) {
+						clearInterval(interval_id);
+						interval_id = null;
+					}
+				},
+				{
+					once: true,
+				},
+			);
+
+			document.addEventListener("astro:page-load", () => {
+				init();
+			});
+		</script>
+	</div></MainLayout
+>

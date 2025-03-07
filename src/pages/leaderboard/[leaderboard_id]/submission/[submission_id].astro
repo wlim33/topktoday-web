@@ -1,81 +1,204 @@
 ---
-import "@/styles/styles.scss";
 import CopyLink from "@/components/CopyLink.astro";
 import PageLayout from "@/layouts/main.astro";
-import { getLeaderboardName } from "@/lib/server/api";
+import { formatTimeAgo } from "@/lib/server/utils";
+import {
+	getLeaderboardInfo,
+	getVerifiers,
+	getSubmissionInfo,
+} from "@/lib/server/api";
+import { type LeaderboardInfo, type Verifier } from "@/lib/server/utils";
+
 const { leaderboard_id, submission_id } = Astro.params;
-let displayName = "";
+
+let info: LeaderboardInfo = {
+	title: "",
+	start: "",
+	duration: "",
+	allow_multiple: true,
+	is_time: false,
+	highest_first: true,
+	created_at: "",
+};
+
+let verifiers = [];
+const { user } = Astro.locals;
+let submission_info: any;
 try {
-	displayName = await getLeaderboardName(leaderboard_id as string);
+	info = await getLeaderboardInfo(leaderboard_id as string);
+	submission_info = await getSubmissionInfo(
+		leaderboard_id as string,
+		submission_id,
+	);
+	verifiers = (await getVerifiers(leaderboard_id as string)).verifiers;
 } catch (e) {
+	console.error(e);
 	Astro.redirect("/system-down");
 }
+
+const isVerifier =
+	user !== null &&
+	verifiers.some((v: Verifier) => {
+		return user.id === v.id;
+	});
+const formatted_timestamp = formatTimeAgo(submission_info.last_submitted);
+console.log(verifiers, user, isVerifier);
 ---
 
 <PageLayout
-	title="Leaderboard"
+	title={`Submission for ${info.title}`}
 	leaderboard={leaderboard_id}
 	submission={submission_id}
 >
-	<section class="container">
-		<hgroup>
-			<a href={`/leaderboard/${leaderboard_id}`}
-				><h2>{displayName}</h2>
-			</a>
-
-			<p>aoirsen</p>
-			<p>
-				<CopyLink id={leaderboard_id} />
-			</p>
-		</hgroup>
-		<hr />
-		<article>
-			<form id="validate-submission">
-				<label for="submission-comment"
-					>Submission comments</label
+	<div class="flex flex-col h-screen items-center bg-base-200">
+		<div class="flex flex-col min-w-full xl:min-w-154 lg:min-w-154">
+			<div class="flex inline-flex justify-between my-4">
+				<div
+					class="flex flex-col justify-around min-h-min"
 				>
-				<textarea
-					id="submission-comment"
-					name="comment"
-					rows="4"
-					cols="50"
-					placeholder="Write your feedback here. "
-					aria-placeholder="Write public feedback for this submission."
-				></textarea>
-				<small
-					>This will be available to anyone with
-					access to this leaderboard.</small
-				>
-				<div role="group">
-					<button class="outline">Archive</button>
-					<button type="submit">Verify</button>
+					<h2
+						class="lg:text-2xl xl:text-3xl link link-primary link-hover"
+					>
+						<a
+							href={`/leaderboard/${leaderboard_id}`}
+							>{info.title}
+						</a>
+					</h2>
+					<CopyLink id={leaderboard_id} />
 				</div>
-			</form>
-			<div role="alert" aria-live="assertive"></div>
+				<div class="flex flex-col justify-around"></div>
+			</div>
 
-			<script>
-				import zod from "zod";
-				import { setupForm } from "@/lib/client/utils";
-				import { verifyScore } from "@/lib/client/formSubmits";
+			<div
+				class="card bg-base-100 shadow-sm border-base-300 text-base-content mb-2"
+				id="leaderboard-article"
+			>
+				<div class="card-body">
+					<div class="flex flex-col justify">
+						<div
+							class="flex inline-flex gap-3"
+						>
+							<div class="text-lg">
+								Score:
+							</div>
+							<div class="text-lg">
+								{
+									submission_info.score
+								}
+							</div>
+						</div>
 
-				document.addEventListener(
-					"astro:page-load",
-					() => {
-						setupForm(
-							"#validate-submission",
-							{
-								onBusy: "Verifying...",
+						<div
+							class="flex inline-flex gap-3"
+						>
+							<div class="text-lg">
+								Link:
+							</div>
+							<div class="text-lg">
+								<a
+									class="link link-info"
+									href={submission_info.link}
+								>
+									{
+										submission_info.link
+									}</a
+								>
+							</div>
+						</div>
+					</div>
 
-								schema: zod.any(),
-								onSubmit: async () => {
-									verifyScore();
-									return true;
-								},
+					<div class="text">
+						submitted by:{
+							submission_info
+								.submitted_by
+								.username
+						}
+						{formatted_timestamp}
+					</div>
+				</div>
+			</div>
+			<div class="divider"></div>
+			<div
+				class="card bg-base-100 shadow-sm border-base-300 text-base-content mb-2 items-center"
+				id="leaderboard-article"
+			>
+				<div class="card-body w-fit">
+					<h3 class="text-xl">
+						Verify Submission
+					</h3>
+
+					<form
+						id="validate-submission"
+						class="flex flex-col gap-4"
+					>
+						<fieldset
+							class="fieldset w-fit"
+						>
+							<label
+								for="submission-comment"
+								class="fieldset-label"
+								>Submission
+								comments</label
+							>
+							<textarea
+								class="textarea w-fit"
+								id="submission-comment"
+								name="comment"
+								rows="4"
+								cols="50"
+								placeholder="Write your feedback here. "
+								aria-placeholder="Write public feedback for this submission."
+							></textarea>
+
+							<small
+								>This will be
+								available to
+								anyone with
+								access to this
+								leaderboard.</small
+							>
+						</fieldset>
+						<div
+							class="flex inline-flex justify-center gap-12"
+						>
+							<button
+								type="submit"
+								class="btn btn-success"
+								>Verify</button
+							>
+						</div>
+					</form>
+					<div role="alert" aria-live="assertive">
+					</div>
+					<script>
+						import zod from "zod";
+						import { setupForm } from "@/lib/client/utils";
+						import { verifyScore } from "@/lib/client/formSubmits";
+
+						document.addEventListener(
+							"astro:page-load",
+							() => {
+								setupForm(
+									document.querySelector(
+										"#validate-submission",
+									) as HTMLFormElement,
+									{
+										onBusy: "Verifying...",
+
+										schema: zod.any(),
+										onSubmit: async () => {
+											verifyScore();
+											return true;
+										},
+									},
+								);
 							},
 						);
-					},
-				);
-			</script>
-		</article>
-	</section>
-</PageLayout>
+					</script>
+
+					<div></div>
+				</div>
+			</div>
+		</div>
+	</div></PageLayout
+>

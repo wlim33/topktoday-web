@@ -1,58 +1,94 @@
 ---
+import { formatTimeAgo } from "@/lib/server/utils";
 const { leaderboards, submissions } = Astro.props;
 const leaderboard_count = leaderboards.length;
 const submission_count = submissions.length;
 ---
 
-<article id="account-overview">
-	<header>
-		<hgroup>
-			<h2>Account Overview</h2>
-		</hgroup>
-	</header>
+<div class="flex flex-col h-screen items-center bg-base-200">
+	<div class="flex flex-col min-w-full xl:min-w-196 lg:min-w-196">
+		<div class="flex inline-flex justify-between my-4">
+			<div class="flex flex-col justify-around min-h-min">
+				<h2 class="lg:text-2xl xl:text-3xl text-info">
+					Account Overview
+				</h2>
+			</div>
+		</div>
+		<div
+			class="card bg-base-100 shadow-sm border-base-300 text-base-content px-4 pb-6 mb-2"
+			id="leaderboard-article"
+		>
+			<div class="flex inline-flex justify-between my-4">
+				<h3 class="text-xl font-bold opacity-80">
+					Leaderboards
+				</h3>
+				<span class="mx-3 opacity-80"
+					>{leaderboard_count} total</span
+				>
+			</div>
+			<ul class="list bg-base-300 rounded-box shadow-md">
+				{
+					leaderboards.map((leaderboard) => (
+						<li class="list-row flex inline-flex justify-between">
+							<a
+								class=" font-semibold link link-hover link-primary"
+								href={`/leaderboard/${leaderboard.id}`}
+							>
+								{
+									leaderboard.title
+								}
+							</a>
 
-	<h3>Leaderboards</h3>
-	<ul>
-		{
-			leaderboards.map((leaderboard) => (
-				<li>
-					<a
-						href={`/leaderboard/${leaderboard.id}`}
-					>
-						{leaderboard.title}
-					</a>
-				</li>
-			))
-		}
-	</ul>
-	<small>{leaderboard_count} total</small>
-	<h3>Submissions</h3>
-	<ul>
-		{
-			submissions.map((submission) => (
-				<li>
-					<span>
-						<a
-							href={`/leaderboard/${submission.leaderboard_id}/submission/${submission.id}`}
-						>
-							{submission.score}
-						</a>
-						for
-						<a
-							href={`/leaderboard/${submission.leaderboard_id}`}
-						>
-							{
-								submission.leaderboard_title
-							}
-						</a>
-					</span>
-				</li>
-			))
-		}
-	</ul>
-
-	<small>{submission_count} total</small>
-	<footer>
-		<small>Account created 12 years ago.</small>
-	</footer>
-</article>
+							<span class="opacity-80">
+								{formatTimeAgo(
+									leaderboard.created_at,
+								)}
+							</span>
+						</li>
+					))
+				}
+			</ul>
+			<div class="divider"></div>
+			<div class="flex inline-flex justify-between">
+				<h3 class="text-xl font-bold opacity-80">
+					Submissions
+				</h3>
+				<span class="mx-3 opacity-80"
+					>{submission_count} total</span
+				>
+			</div>
+			<ul class="list bg-base-300 rounded-box shadow-md">
+				{
+					submissions.map((submission) => (
+						<li class="list-row">
+							<span>
+								Submitted
+								<a
+									class="link link-accent link-hover"
+									href={`/leaderboard/${submission.leaderboard_id}/submission/${submission.id}`}
+								>
+									{
+										submission.score
+									}
+								</a>
+								for
+								<a
+									class="link link-info link-hover font-semibold"
+									href={`/leaderboard/${submission.leaderboard_id}`}
+								>
+									{
+										submission.leaderboard_title
+									}
+								</a>
+								at
+								{
+									submission.last_submitted
+								}
+							</span>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</div>
+</div>

@@ -1,60 +1,87 @@
 ---
-import "../../styles/styles.scss";
 import CopyLink from "@/components/CopyLink.astro";
 import PageLayout from "@/layouts/main.astro";
 import {
 	getLeaderboard,
-	getLeaderboardName,
+	getLeaderboardInfo,
 	getVerifiers,
 } from "@/lib/server/api";
 
-import { type Entry, formatTimeAgo } from "@/lib/server/utils";
+import {
+	type Entry,
+	type LeaderboardInfo,
+	type Verifier,
+	formatTimeAgo,
+} from "@/lib/server/utils";
 
 const { leaderboard_id } = Astro.params;
 
-let displayName = "";
+let info: LeaderboardInfo = {
+	title: "",
+	start: "",
+	duration: "",
+	allow_multiple: true,
+	is_time: false,
+	highest_first: true,
+	created_at: "",
+};
 let leaderboard = { scores: [] };
 let verifiers = [];
 try {
-	displayName = await getLeaderboardName(leaderboard_id as string);
+	info = await getLeaderboardInfo(leaderboard_id as string);
 	leaderboard = await getLeaderboard(leaderboard_id as string);
 	verifiers = (await getVerifiers(leaderboard_id as string)).verifiers;
+	console.log(info);
 } catch (e) {
+	console.log(e);
 	Astro.redirect("/system-down");
 }
 ---
 
 <PageLayout title="Leaderboard" leaderboard={leaderboard_id}>
-	<div class="container-fluid center-container">
-		<section id="leaderboard-section" class="centered-narrow">
-			<nav>
-				<hgroup>
-					<h2>{displayName}</h2>
-					<CopyLink id={leaderboard_id} />
-				</hgroup>
+	<div class="flex flex-col h-screen items-center bg-base-200">
+		<div class="flex flex-col min-w-full xl:min-w-196 lg:min-w-196">
+			<div class="flex inline-flex justify-between my-4">
 				<div
-					style="display: flex; align-items: center;"
+					class="flex flex-col justify-around min-h-min"
 				>
+					<h2
+						class="lg:text-2xl xl:text-3xl link link-primary link-hover"
+					>
+						{info.title}
+					</h2>
+					<CopyLink id={leaderboard_id} />
+				</div>
+				<div class="flex flex-col justify-around">
 					<a
 						type="button"
+						class="btn btn-soft btn-accent btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md"
 						href={`/leaderboard/${leaderboard_id}/submission`}
-						><strong
-							>+ New Submission</strong
-						></a
+						>+ New Submission</a
 					>
 				</div>
-			</nav>
-			<article id="leaderboard-article">
-				<table id="leaderboard-table" is="score-table">
+			</div>
+			<div
+				class="card bg-base-100 shadow-sm border-base-300 text-base-content px-4 py-2 mb-2"
+				id="leaderboard-article"
+			>
+				<table
+					id="leaderboard-table"
+					is="score-table"
+					class="table"
+				>
 					<thead>
 						<tr>
-							<th scope="col">Rank</th
-							>
+							<th scope="col"></th>
 							<th scope="col"
 								>Player</th
 							>
 							<th scope="col"
-								>Score</th
+								>{
+									info.is_time
+										? "Time"
+										: "Score"
+								}</th
 							>
 							<th
 								scope="col"
@@ -71,6 +98,7 @@ try {
 									idx: number,
 								) => (
 									<tr
+										class="hover:bg-base-300"
 										data-timestamp={
 											score.submitted_at
 										}
@@ -88,7 +116,8 @@ try {
 											)}
 										</th>
 										<td class="row-user">
-											<b
+											<a
+												class="link link-info link-hover"
 												href={`/account/${score.user.id}`}
 											>
 												{
@@ -96,7 +125,7 @@ try {
 														.user
 														.username
 												}
-											</b>
+											</a>
 										</td>
 										<td class="row-score">
 											<a
@@ -133,28 +162,44 @@ try {
 						</tr>
 					</tfoot>
 
-					<caption></caption>
+					<caption>
+						<div class="text-md">
+							{
+								info.highest_first
+									? "Highest scores appear higher."
+									: "Lower times appear higher."
+							}
+						</div>
+					</caption>
 				</table>
 				<small>*scores are not verified.</small>
-			</article>
+			</div>
 
-			<hr />
-			<h4>Verifiers</h4>
-			<ul>
+			<h4 class="text-l px-2">Verifiers:</h4>
+			<div class="px-2">
 				{
-					verifiers.map((verifier) => (
-						<li>
-							<a
-								href={`/account/${verifier.id}`}
-							>
-								{
-									verifier.username
-								}
-							</a>
-						</li>
-					))
+					verifiers.map(
+						(
+							verifier: Verifier,
+							idx: number,
+						) => (
+							<>
+								<a
+									class="link link-info link-hover"
+									href={`/account/${verifier.id}`}
+								>
+									{
+										verifier.username
+									}
+								</a>
+								{idx + 1 <
+									verifiers.length &&
+									", "}
+							</>
+						),
+					)
 				}
-			</ul>
-		</section>
+			</div>
+		</div>
 	</div>
 </PageLayout>

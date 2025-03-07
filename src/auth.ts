@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { username } from "better-auth/plugins"
 import { anonymous } from "better-auth/plugins"
 import { usernameSchema } from "@/lib/server/schemas";
+import { linkAnonymousAccount } from "@/lib/server/api";
 import pg from 'pg';
 
 const { Pool } = pg;
@@ -14,12 +15,11 @@ export const auth = betterAuth({
 				return success
 			}
 		}),
-		anonymous({})
-		//anonymous({
-		//	onLinkAccount: async ({ anonymousUser, newUser }) => {
-		//		await linkAnonymousAccount(anonymousUser.user.id, newUser.user.id)
-		//	},
-		//})
+		anonymous({
+			onLinkAccount: async ({ anonymousUser, newUser }) => {
+				await linkAnonymousAccount(anonymousUser.user.id, newUser.user.id)
+			},
+		})
 	],
 	socialProviders: {
 		discord: {
@@ -43,5 +43,4 @@ export const auth = betterAuth({
 	database: new Pool({
 		connectionString: import.meta.env.DB_URL
 	})
-	,
 })

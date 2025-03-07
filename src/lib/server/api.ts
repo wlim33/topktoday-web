@@ -12,11 +12,18 @@ export async function newLeaderboard(userID: string, displayName: string) {
 	});
 }
 
-export async function getLeaderboardName(id: string) {
-	const path = pathJoin([import.meta.env.PUBLIC_API_DOMAIN, "leaderboard", id, "name"])
+export async function getSubmissionInfo(leaderboard: string, submission: string) {
+	const path = pathJoin([import.meta.env.PUBLIC_API_DOMAIN, "leaderboard", leaderboard, "submission", submission])
 	const response = await fetch(path);
 	let parsed = await response.json()
-	return parsed.name
+	return parsed
+}
+
+export async function getLeaderboardInfo(id: string) {
+	const path = pathJoin([import.meta.env.PUBLIC_API_DOMAIN, "leaderboard", id, "info"])
+	const response = await fetch(path);
+	let parsed = await response.json()
+	return parsed
 }
 
 export async function getLeaderboard(id: string) {

@@ -1,5 +1,4 @@
 ---
-import "../styles/styles.scss";
 import MainLayout from "@/layouts/main.astro";
 import AccountLayout from "@/layouts/AccountNavigation.astro";
 import AccountOverview from "@/components/AccountOverview.astro";
@@ -20,22 +19,5 @@ submissions = (await getUserSubmissions(user?.id)).submissions;
 			leaderboards={leaderboards}
 			submissions={submissions}
 		/>
-		{
-			isLoggedIn && (
-				<article>
-					<header>
-						<h2>API Key</h2>
-					</header>
-					<strong>API Keys</strong>
-					<ul>
-						<li>
-							<a href="">
-								leaderboard 1
-							</a>
-						</li>
-					</ul>
-				</article>
-			)
-		}
 	</AccountLayout>
 </MainLayout>

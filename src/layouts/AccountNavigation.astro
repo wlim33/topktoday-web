@@ -1,7 +1,5 @@
 ---
 import { getCustomer } from "@lemonsqueezy/lemonsqueezy.js";
-import "@/styles/styles.scss";
-
 const { user, customer_id } = Astro.locals;
 const isLoggedIn: boolean = user !== null && !user.isAnonymous;
 
@@ -21,32 +19,39 @@ if (customer_id) {
 }
 ---
 
-<section class="container" style="width: 66%;">
+<div class="flex flex-col h-screen items-center bg-base-200">
 	{
 		isLoggedIn && (
-			<nav>
-				<ul>
-					<li>
-						<a href="/account">Account</a>
-					</li>
-					<li>
-						<a href={billing_portal_link}>
-							Payment Dashboard
-						</a>
-					</li>
-				</ul>
+			<div class="flex inline-flex justify-between my-4 w-full">
+				<div role="tablist" class="tabs">
+					<a
+						role="tab"
+						class="tab"
+						tab-active
+						href="/account"
+					>
+						Account
+					</a>
+					<a
+						role="tab"
+						class="tab"
+						href={billing_portal_link}
+					>
+						Payment Dashboard
+					</a>
+				</div>
 
 				<ul>
 					<li>
 						<button
 							id="logout"
-							class="secondary outline"
+							class="btn btn-outline opacity-60"
 						>
 							Log Out
 						</button>
 					</li>
 				</ul>
-			</nav>
+			</div>
 		)
 	}
 	<slot />
@@ -62,4 +67,4 @@ if (customer_id) {
 			navigate("/");
 		});
 	</script>
-</section>
+</div>

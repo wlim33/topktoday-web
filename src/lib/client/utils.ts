@@ -26,42 +26,42 @@ export function formatTimeAgo(timestamp: string): string {
 }
 
 
-let intervalId: null | ReturnType<typeof setInterval>;
-export function addCarousel(firstWord: HTMLSpanElement, secondWord: HTMLSpanElement) {
-	if (!firstWord || !secondWord) {
-		return
-	}
+export function addCarousel(intervalId: null | ReturnType<typeof setInterval>, firstWordID: string, secondWordID: string): ReturnType<typeof setInterval> {
+
 	let i: number = 0;
 	if (intervalId) {
 		clearInterval(intervalId);
-		// release our intervalId from the variable
 		intervalId = null;
 	}
 	if (!intervalId) {
 		intervalId = setInterval(() => {
+			const firstWord = document.querySelector(`#${firstWordID}`) as HTMLElement
+			const secondWord = document.querySelector(`#${secondWordID}`) as HTMLElement
 			let next = getNextText(i)
-			firstWord.innerHTML = next[1]
-			secondWord.innerHTML = next[2]
+			let next_first = firstWord.cloneNode(true) as HTMLElement
+			let next_second = secondWord.cloneNode(true) as HTMLElement
+			next_first.innerHTML = next[1]
+			next_second.innerHTML = next[2]
 			i = next[0];
-		}, 2000);
+
+			firstWord.replaceWith(next_first);
+			secondWord.replaceWith(next_second);
+		}, 2500);
 	}
+	return intervalId
 
 
 
 }
 
-const words: [string, string][] = [["fastest speedrunners", "in your video game"], ["top teams", "in your sports league"], ["funniest coworkers", "in your Slack channel"]]
+const words: [string, string][] = [["most active users", "in your Discord server"], ["fastest speedrunners", "in your video game"], ["top teams", "in your sports league"], ["funniest coworkers", "in your Slack channel"]]
 export function getNextText(current_i: number): [number, string, string] {
 	let next_i = (current_i + 1) % words.length;
 	return [next_i, words[next_i][0], words[next_i][1]]
-
 }
 
-export function hideBasedOn(input_selector: string, target_selector: string, invert: boolean = false) {
-	const input = document.querySelector(input_selector) as HTMLInputElement
-	const target = document.querySelector(target_selector) as HTMLElement
+export function hideBasedOn(input: HTMLInputElement, target: HTMLElement, invert: boolean = false) {
 	function update() {
-
 		if (invert) {
 			target.hidden = !input.checked
 		} else {
@@ -96,12 +96,7 @@ export const getTodayAndTomorrow = (): { today: string, tomorrow: string } => {
 	return { today, tomorrow }
 }
 
-export const setupForm = (form_id: string, config: Config<Schema>) => {
-	const element = document.querySelector(form_id)
-	if (!element) {
-		console.error("Unable to find form element:", form_id)
-		return
-	}
+export const setupForm = (element: HTMLFormElement, config: Config<Schema>) => {
 
 	const onError = document.querySelector(
 		'[role="alert"]',
@@ -160,7 +155,7 @@ export const setupForm = (form_id: string, config: Config<Schema>) => {
 					input.value = ""
 				}
 
-				form.querySelector("button[type=submit]").textContent = prevText;
+				//form.querySelector("button[type=submit]").textContent = prevText;
 				if (config.emitEvent) {
 					form.dispatchEvent(config.emitEvent)
 				}
@@ -169,6 +164,7 @@ export const setupForm = (form_id: string, config: Config<Schema>) => {
 			let message = error.message;
 
 			if (error.errors && error.errors.length) {
+				console.log(error.errors[0].path[0])
 				form.querySelector(`[name="${error.errors[0].path[0]}"]`).focus();
 				message = error.errors[0].message;
 			} else {

@@ -1,6 +1,4 @@
 ---
-const { userID } = Astro.props;
-
 var date = new Date();
 var one_day_forward = new Date();
 one_day_forward.setDate(date.getDate() + 1);
@@ -12,30 +10,29 @@ date.setSeconds(0);
 
 const today = date.toISOString().replace(":00.000Z", "");
 const tomorrow = one_day_forward.toISOString().replace(":00.000Z", "");
+const { ismodal } = Astro.props;
+console.log(ismodal);
 ---
 
-<dialog id="my_modal_2" class="modal">
-	<div class="modal-box">
-		<h3 class="text-lg font-bold">New Leaderboard</h3>
+<>
+	<modal-form data-ismodal={ismodal}>
 		<form id="new-leaderboard">
-			<div class="">
-				<fieldset class="fieldset">
-					<legend class="fieldset-legend">
-						Leaderboard Title
-					</legend>
-					<input
-						class="input w-full"
-						name="title"
-						placeholder="Today's Bar Trivia Rankings"
-						aria-label="new-leaderboard-title"
-						autocomplete="new-leaderboard-title"
-					/>
+			<fieldset class="fieldset">
+				<legend class="fieldset-legend">
+					Public Title
+				</legend>
+				<input
+					class="input w-full"
+					name="title"
+					placeholder="Today's Bar Trivia Rankings"
+					aria-label="new-leaderboard-title"
+					autocomplete="new-leaderboard-title"
+				/>
 
-					<p class="fieldset-label">
-						This title will be public.
-					</p>
-				</fieldset>
-			</div>
+				<p class="fieldset-label">
+					This title will be public.
+				</p>
+			</fieldset>
 
 			<div class="divider">Leaderboard Options</div>
 			<fieldset class="fieldset flex-col justify-between">
@@ -147,7 +144,10 @@ const tomorrow = one_day_forward.toISOString().replace(":00.000Z", "");
 					</label>
 				</div>
 
-				<label class="input w-full">
+				<label
+					id="custom-start-date-picker"
+					class="input w-full"
+				>
 					<span class="label">Start date:</span>
 					<input
 						class="flex-inline justify-end"
@@ -197,72 +197,55 @@ const tomorrow = one_day_forward.toISOString().replace(":00.000Z", "");
 			</div>
 		</form>
 		<div role="alert" aria-live="assertive"></div>
+	</modal-form>
+	<script>
+		import {
+			setupForm,
+			hideBasedOn,
+			addCarousel,
+		} from "@/lib/client/utils";
+		import { newLeaderboard } from "@/lib/client/formSubmits";
+		import { newLeaderboardSchema } from "@/lib/client/schemas";
+		import { LEADERBOARD_PAGE_BASE } from "@/lib/client/urls";
+		import { navigate } from "astro:transitions/client";
 
-		<script>
-			import {
-				setupForm,
-				hideBasedOn,
-				addCarousel,
-			} from "@/lib/client/utils";
-			import { newLeaderboard } from "@/lib/client/formSubmits";
-			import { newLeaderboardSchema } from "@/lib/client/schemas";
-			import { LEADERBOARD_PAGE_BASE } from "@/lib/client/urls";
-			import { navigate } from "astro:transitions/client";
+		class ModalForm extends HTMLElement {
+			connectedCallback() {
+				const message = this.dataset.ismodal;
 
-			let interval_id: null | ReturnType<typeof setInterval>;
-			function init() {
-				console.log("page  load");
-				interval_id = addCarousel(
-					interval_id,
-					"title-best-subject",
-					"title-group-subject",
-				);
 				hideBasedOn(
-					"#end-date-never",
-					"input#cutoff-datetime",
-				);
-				hideBasedOn(
-					"#start-date-now",
-					"input#start-datetime",
+					document.querySelector(
+						"#start-immediately-no",
+					),
+					document.querySelector(
+						"label#custom-start-date-picker",
+					),
 				);
 
-				setupForm("#new-leaderboard", {
-					onBusy: "Creating...",
-					schema: newLeaderboardSchema,
-					onSubmit: async (submission) => {
-						const id =
-							await newLeaderboard(
-								submission,
+				setupForm(
+					this.querySelector("#new-leaderboard"),
+					{
+						onBusy: "Creating...",
+						schema: newLeaderboardSchema,
+						onSubmit: async (
+							submission,
+						) => {
+							const id =
+								await newLeaderboard(
+									submission,
+								);
+
+							await navigate(
+								`${LEADERBOARD_PAGE_BASE}/${id}`,
 							);
 
-						await navigate(
-							`${LEADERBOARD_PAGE_BASE}/${id}`,
-						);
-
-						return true;
+							return true;
+						},
 					},
-				});
+				);
 			}
-			document.addEventListener(
-				"astro:before-swap",
-				() => {
-					console.log("before swap");
-					if (interval_id) {
-						clearInterval(interval_id);
-						interval_id = null;
-					}
-				},
-				{
-					once: true,
-				},
-			);
+		}
 
-			document.addEventListener("astro:page-load", () => {
-				init();
-			});
-		</script>
-	</div>
-	<form method="dialog" class="modal-backdrop">
-		<button>close</button>
-	</form>
-</dialog>
+		customElements.define("modal-form", ModalForm);
+	</script>
+</>

@@ -1,6 +1,7 @@
 ---
+import "@/styles/styles.css";
 import { ClientRouter } from "astro:transitions";
-import NewLeaderboardModal from "../components/NewLeaderboardModal.astro";
+import NewLeaderboardForm from "@/components/NewLeaderboardForm.astro";
 const { title, leaderboard, submission } = Astro.props;
 
 const isLoggedIn: boolean =
@@ -15,120 +16,131 @@ const isLoggedIn: boolean =
 		<meta name="generator" content={Astro.generator} />
 		<ClientRouter />
 		<title>{title}</title>
+
+		<script>
+			import { authClient } from "@/lib/client/auth-client";
+
+			const session = await authClient.getSession();
+			if (!session.data) {
+				await authClient.signIn.anonymous();
+			}
+		</script>
 	</head>
-	<body>
+	<body class="flex flex-col items-center bg-base-200">
 		<div
 			id="frontmatter-store"
 			data-leaderboard={leaderboard}
 			data-submission={submission}
 		>
 		</div>
-		<main class="container" style="min-height: 100vh;">
-			<nav>
-				<ul>
-					<li>
-						<a href="/"
-							><h3>Top K Today</h3></a
-						>
-					</li>
-				</ul>
-				<ul>
-					<li>
-						<button
-							class="outline"
-							id="new-leaderboard-button"
-							>+ New Leaderboard</button
-						>
-					</li>
+		<div class="bg-base-100 w-full flex flex-col items-center">
+			<div
+				class="navbar bg-base-100 shadow-sm lg:w-full xl:w-5/6"
+			>
+				<div class="flex-1">
+					<a
+						class="link link-hover font-bold shrink-0 text-xl"
+						href="/"><h3>Top K Today</h3></a
+					>
+				</div>
 
-					<li>
-						<a href="/pricing/">Pricing</a>
-					</li>
+				<div class="flex-none">
+					<ul
+						class="menu menu-horizontal rounded-box gap-1"
+					>
+						<li>
+							<label
+								class="btn btn-primary btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit mx-3"
+								id="new-leaderboard-button"
+								for="my_modal_7"
+								class="btn"
+								>+ New
+								Leaderboard</label
+							>
+						</li>
 
-					{
-						!isLoggedIn && (
-							<>
+						<li>
+							<a
+								class="btn btn-link text-neutral-content link-hover btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit"
+								href="/pricing/"
+								>Pricing</a
+							>
+						</li>
+
+						{
+							!isLoggedIn && (
+								<>
+									<li>
+										<a
+											href="/login"
+											class="btn btn-link text-neutral-content link-hover btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit"
+										>
+											Log
+											in
+										</a>
+									</li>
+									<li>
+										<a
+											class="btn btn-link link-hover text-neutral-content btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit"
+											href="/register/"
+										>
+											Register
+										</a>
+									</li>
+								</>
+							)
+						}
+
+						{
+							isLoggedIn && (
 								<li>
-									<a href="/login">
-										Log
-										in
+									<a
+										class="btn btn-link link-hover link-info btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit"
+										href="/account/"
+									>
+										Account
 									</a>
 								</li>
-								<li>
-									<a href="/register/">
-										Register
-									</a>
-								</li>
-							</>
-						)
-					}
+							)
+						}
+					</ul>
+				</div>
+			</div>
+		</div>
 
-					{
-						isLoggedIn && (
-							<li>
-								<a href="/account/">
-									Account
-								</a>
-							</li>
-						)
-					}
-				</ul>
-			</nav>
-
+		<div class="bg-base-200">
 			<slot />
-		</main>
-
-		<NewLeaderboardModal />
-		<script>
-			import { authClient } from "@/lib/client/auth-client";
-			const session = await authClient.getSession();
-			if (!session.data) {
-				await authClient.signIn.anonymous();
-			}
-
-			document.addEventListener("astro:page-load", () => {
-				const openModal = document.querySelector(
-					"#new-leaderboard-button",
-				);
-				openModal?.addEventListener(
-					"click",
-					(e: Event) => {
-						e.preventDefault();
-
-						const modal =
-							document.querySelector(
-								"#new-leaderboard-modal",
-							);
-						modal?.toggleAttribute("open");
-						document.documentElement.classList.add(
-							"modal-is-open",
-						);
-						document.documentElement.classList.add(
-							"modal-is-opening",
-						);
-						document.documentElement.classList.remove(
-							"modal-is-closing",
-						);
-					},
-				);
-			});
-		</script>
-		<footer class="container">
-			<hr />
-
-			<hgroup>
+		</div>
+		<footer
+			class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4"
+		>
+			<aside>
 				<p>
-					Created by <a href="https://wlim.dev"
+					Created by <a
+						class="link link-primary"
+						href="https://wlim.dev"
 						>William Lim</a
 					>
 				</p>
-				<p>
-					<small>
-						Version <span>0.0.8</span>
-					</small>
-					<p></p>
-				</p>
-			</hgroup>
+
+				<small>
+					Version <span>0.0.8</span>
+				</small>
+			</aside>
 		</footer>
+
+		<input type="checkbox" id="my_modal_7" class="modal-toggle" />
+		<div class="modal" role="dialog">
+			<div class="modal-box">
+				<h3 class="text-center text-xl font-bold">
+					New Leaderboard
+				</h3>
+
+				<NewLeaderboardForm ismodal={true} />
+			</div>
+			<label class="modal-backdrop" for="my_modal_7"
+				>Close</label
+			>
+		</div>
 	</body>
 </html>

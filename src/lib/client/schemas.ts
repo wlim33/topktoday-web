@@ -26,29 +26,30 @@ export const leaderboardTitle = zod
 export const newLeaderboardSchema = zod.object({
 	title: leaderboardTitle,
 	"highest-score": zod.boolean(),
-	"only-one-submission": zod.boolean(),
-	"start-datetime": zod.string().transform(value => `${value}Z`),
-	"cutoff-datetime": zod.string().transform(value => `${value}Z`),
-	"end-date-never": zod.boolean(),
-	"start-date-now": zod.boolean(),
+	"lowest-time": zod.boolean(),
+	"multiple-submissions-yes": zod.boolean(),
+	"multiple-submissions-no": zod.boolean(),
+	"start-date-custom": zod.string().transform(value => `${value}Z`),
+	"duration-raw": zod.string(),
+	"start-immediately-yes": zod.boolean(),
+	"start-immediately-no": zod.boolean(),
 }).transform((val) => {
 	const formatted: any = {
 		title: val.title,
 		highest_first: val['highest-score'],
-		multiple_submissions: !val['only-one-submission'],
+		multiple_submissions: val['multiple-submissions-yes'] || !val['multiple-submissions-no'],
 		is_time: !val['highest-score'],
 	}
-	const start_now = val['start-date-now'] || val['start-datetime'] === 'Z'
-	const end_never = val['end-date-never'] || val['cutoff-datetime'] === 'Z'
+	const start_now = val['start-immediately-yes'] || !val['start-immediately-yes']
+	const end_never = val['duration-raw'] === 'Never'
 
 	let start = dayjs()
 	if (!start_now) {
-		start = dayjs(val['start-datetime'])
+		start = dayjs(val['start-date-custom'])
 		formatted.start = start.toISOString()
 	}
 	if (!end_never) {
-		formatted.duration = dayjs.duration(dayjs(val['cutoff-datetime']).diff(start)).format('YYYY-MM-DDTHH:mm:ss')
-		formatted.duration = formatted.duration.replace(/^(0|-|T)+(?!$)/, "")
+		formatted.duration = dayjs.duration(val['duration-raw'] as string).toISOString()
 	}
 
 	return formatted

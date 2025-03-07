@@ -1,5 +1,4 @@
 ---
-import "../styles/styles.scss";
 import PageLayout from "../layouts/main.astro";
 
 const { user } = Astro.locals;
@@ -16,70 +15,188 @@ if (user?.id) {
 ---
 
 <PageLayout title="Pricing | Top K Today">
-	<h1 style="text-align: center;">Pricing</h1>
-	<div class="container" style="width: 75%;">
-		<div class="grid">
-			<article>
-				<header>
-					<h2 style="text-align: center;">
+	<h1 class="my-6 text-4xl font-bold text-center">Pricing</h1>
+	<div
+		class="flex inline-flex justify-center align-start gap-12 pb-128 m-0"
+	>
+		<article class="card w-96 bg-base-100 shadow-sm">
+			<div class="card-body">
+				<div class="flex justify-between">
+					<h2 class="text-3xl font-bold">
 						Casual
 					</h2>
-					<h4 style="text-align: center;">
-						always free.
-					</h4>
-				</header>
+					<h4 class="text-xl">Free</h4>
+				</div>
 
-				<section>
-					<ul>
-						<li>
-							<u>Unlimited</u> submissions
-						</li>
-						<li>5 new leaderboards/day</li>
-						<li>
-							3 concurrent verifiers
-							per leaderboard
-						</li>
-					</ul>
-				</section>
-				<hgroup style=" text-align: center;">
-					<hr />
-
-					<h4>Always free.</h4>
-					<p>
-						Create a free account <a
-							href="/register">here</a
-						>.
-					</p>
-				</hgroup>
-			</article>
-
-			<article>
-				<header>
-					<h2 style="text-align: center;">
-						Standard
-					</h2>
-					<h4 style="text-align: center;">
-						5$/ month
-					</h4>
-				</header>
-				<ul>
+				<ul class="mt-6 flex flex-col gap-2 text-xs">
 					<li>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="size-4 me-2 inline-block text-success"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							></path></svg
+						>
 						<u>Unlimited</u>
 						submissions
 					</li>
-					<li><b>50</b> new leaderboards/day</li>
+
 					<li>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="size-4 me-2 inline-block text-success"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							></path></svg
+						>
+						Multiple types of submissions
+					</li>
+					<li>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="size-4 me-2 inline-block text-base-content/50"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							></path></svg
+						>
+						5 new leaderboards/day
+					</li>
+					<li>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="size-4 me-2 inline-block text-base-content/50"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							></path></svg
+						>
+						3 concurrent verifiers per leaderboard
+					</li>
+				</ul>
+				<div
+					class="mt-6 flex flex-col items-center h-full justify-center"
+				>
+					<h4>No credit card needed.</h4>
+					<p>
+						Register free account <a
+							class="link link-primary"
+							href="/register">here</a
+						>.
+					</p>
+				</div>
+			</div>
+		</article>
+
+		<article class="card w-96 bg-base-100 shadow-sm">
+			<div class="card-body">
+				<div class="flex justify-between">
+					<h2 class="text-3xl font-bold">
+						Standard
+					</h2>
+					<h4 class="text-xl">$5/mo</h4>
+				</div>
+				<ul class="mt-6 flex flex-col gap-2 text-xs">
+					<li>
+						<u>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="size-4 me-2 inline-block text-success"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+								><path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M5 13l4 4L19 7"
+								></path></svg
+							>
+							Unlimited</u
+						>
+						submissions
+					</li>
+
+					<li>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="size-4 me-2 inline-block text-success"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							></path></svg
+						>
+						Multiple types of submissions
+					</li>
+					<li>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="size-4 me-2 inline-block text-success"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							></path></svg
+						>
+						<b>50</b> new leaderboards/day
+					</li>
+					<li>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							class="size-4 me-2 inline-block text-success"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M5 13l4 4L19 7"
+							></path></svg
+						>
 						<b>20</b> concurrent verifiers/leaderboard
 					</li>
 				</ul>
-				<hr />
-				<hgroup style="text-align: center;">
-					<a type="button" href={buyLink}
+				<div
+					class="mt-6 flex flex-col items-center gap-4"
+				>
+					<a class="btn btn-accent" href={buyLink}
 						>Buy Pro Account</a
 					>
 					<p>More features coming soon!</p>
-				</hgroup>
-			</article>
-		</div>
+				</div>
+			</div>
+		</article>
 	</div>
 </PageLayout>

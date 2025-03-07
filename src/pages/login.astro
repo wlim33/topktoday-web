@@ -1,80 +1,120 @@
 ---
-import "../styles/styles.scss";
 import MainLayout from "../layouts/main.astro";
 import SocialLoginButtons from "@/components/SocialLoginButtons.astro";
 ---
 
-<MainLayout title="Register">
-	<section class="container" style="width: 33%;">
-		<article>
-			<header><h2>Sign In</h2></header>
-			<form id="signin-form">
-				<label for="email">Email</label>
-				<input
-					type="email"
-					id="email"
-					name="email"
-					placeholder="Email"
-					autocomplete="email"
-				/>
-				<label for="password">Password</label>
-				<input
-					type="password"
-					id="password"
-					name="password"
-					placeholder="Password"
-					autocomplete="new-password"
-				/>
-				<fieldset>
-					<label>
-						<input
-							type="checkbox"
-							name="rememberme"
-						/> Remember me
-					</label>
-				</fieldset>
-				<button type="submit">Sign In</button>
-			</form>
-			<button
-				id="register-button"
-				style="width: 100%;"
-				class="outline">Create a new account</button
+<MainLayout title="Log In">
+	<div class="flex flex-col h-screen items-center bg-base-200">
+		<div class="flex flex-col lg:min-w-96">
+			<div
+				class="card bg-base-100 shadow-sm border-base-300 text-base-content px-4 pb-4 my-6"
+				id="leaderboard-article"
 			>
-			<hr />
-			<div role="alert" aria-live="assertive"></div>
-			<footer>
-				<SocialLoginButtons />
-			</footer>
-		</article>
-		<script>
-			import { setupForm } from "@/lib/client/utils";
-			import { loginForm } from "@/lib/client/schemas";
-			import { authClient } from "@/lib/client/auth-client";
-			document.addEventListener("astro:page-load", () => {
-				setupForm("#signin-form", {
-					onBusy: "Signing in...",
-					schema: loginForm,
-					onSubmit: async (submission: {
-						email: string;
-						password: string;
-						rememberme: boolean;
-					}) => {
-						const response =
-							await authClient.signIn.email(
-								{
-									email: submission.email,
-									password: submission.password,
-									rememberMe: submission.rememberme,
-								},
-							);
-						if (response.error) {
-							return response.error
-								.message as string;
-						}
-						return true;
-					},
-				});
-			});
-		</script>
-	</section>
+				<div class="card-body">
+					<form id="signin-form">
+						<fieldset class="fieldset">
+							<legend
+								class="text-3xl fieldset-legend"
+							>
+								Sign in
+							</legend>
+							<label
+								for="email"
+								class="fieldset-label"
+								>Email</label
+							>
+							<input
+								class="input"
+								type="email"
+								id="email"
+								name="email"
+								placeholder="Email"
+								autocomplete="email"
+							/>
+
+							<label
+								for="password"
+								class="fieldset-label"
+								>Password</label
+							>
+							<input
+								class="input"
+								type="password"
+								id="password"
+								name="password"
+								placeholder="Password"
+								autocomplete="new-password"
+							/>
+						</fieldset>
+						<div
+							class="flex flex-col items-center justify-center"
+						>
+							<button
+								class="btn btn-primary mt-4 btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg"
+								type="submit"
+								class="btn btn-secondary"
+								>Sign In</button
+							>
+
+							<button
+								id="register-button"
+								class="btn btn-link btn-xs sm:btn-small md:btn-md lg:btn-md xl:btn-md"
+								>Create a new
+								account</button
+							>
+						</div>
+					</form>
+					<hr />
+					<div role="alert" aria-live="assertive">
+					</div>
+
+					<div
+						class="divider text-neutral-content"
+					>
+					</div>
+					<footer>
+						<SocialLoginButtons />
+					</footer>
+				</div>
+				<script>
+					import { setupForm } from "@/lib/client/utils";
+					import { loginForm } from "@/lib/client/schemas";
+					import { authClient } from "@/lib/client/auth-client";
+import { navigate } from "astro:transitions/client";
+					setupForm(
+						document.querySelector(
+							"#signin-form",
+						) as HTMLFormElement,
+						{
+							onBusy: "Signing in...",
+							schema: loginForm,
+							onSubmit: async (submission: {
+								email: string;
+								password: string;
+								rememberme: boolean;
+							}) => {
+								const response =
+									await authClient.signIn.email(
+										{
+											email: submission.email,
+											password: submission.password,
+											rememberMe: submission.rememberme,
+										},
+									);
+								if (
+									response.error
+								) {
+									return response
+										.error
+										.message as string;
+								}
+								navigate('/account')
+								return true;
+							},
+						},
+					);
+				</script>
+			</div>
+		</div>
+	</div>
 </MainLayout>

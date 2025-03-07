@@ -4,6 +4,11 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
+export type Verifier = {
+	id: string,
+	added_at: string,
+	username: string
+}
 
 export type Entry = {
 	user: {
@@ -14,6 +19,15 @@ export type Entry = {
 	submitted_at: string,
 	id: string,
 	verified: boolean,
+}
+export type LeaderboardInfo = {
+	title: string,
+	duration: string,
+	start: string,
+	allow_multiple: boolean,
+	is_time: boolean,
+	highest_first: boolean,
+	created_at: string
 }
 
 

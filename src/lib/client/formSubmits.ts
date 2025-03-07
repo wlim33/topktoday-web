@@ -11,6 +11,13 @@ export async function newLeaderboard(leaderboardConfig: zod.infer<typeof newLead
 		},
 		body: JSON.stringify(leaderboardConfig),
 	});
+
+	if (response.status === 500) {
+		throw new Error("Looks like our servers are currently experiencing difficulties. Please try again soon.")
+	}
+	if (response.status !== 200) {
+		throw new Error("Unable to create a new leaderboard at this time.")
+	}
 	let parsed = await response.json()
 	return parsed.id
 }

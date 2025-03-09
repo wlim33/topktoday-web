@@ -21,5 +21,7 @@ export default defineConfig({
     }
   },
   adapter: netlify(),
-
+  redirects: {
+    "/docs": "https://docs.topktoday.dev",
+  }
 })

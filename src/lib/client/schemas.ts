@@ -40,7 +40,7 @@ export const newLeaderboardSchema = zod.object({
 		multiple_submissions: val['multiple-submissions-yes'] || !val['multiple-submissions-no'],
 		is_time: !val['highest-score'],
 	}
-	const start_now = val['start-immediately-yes'] || !val['start-immediately-yes']
+	const start_now = val['start-immediately-yes']
 	const end_never = val['duration-raw'] === 'Never'
 
 	let start = dayjs()
@@ -51,6 +51,7 @@ export const newLeaderboardSchema = zod.object({
 	if (!end_never) {
 		formatted.duration = dayjs.duration(val['duration-raw'] as string).toISOString()
 	}
+	console.log("submission:", formatted)
 
 	return formatted
 })

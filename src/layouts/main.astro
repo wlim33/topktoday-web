@@ -37,14 +37,101 @@ const isLoggedIn: boolean =
 			<div
 				class="navbar bg-base-100 shadow-sm lg:w-full xl:w-5/6"
 			>
-				<div class="flex-1">
+				<div class="navbar-start">
 					<a
 						class="link link-hover font-bold shrink-0 text-xl"
 						href="/"><h3>Top K Today</h3></a
 					>
 				</div>
 
-				<div class="flex-none">
+				<div class="navbar-end flex lg:hidden">
+					<label
+						class="btn btn-primary btn-sm sm:btn-sm lg:btn-md xl:btn-md w-fit mx-3"
+						id="new-leaderboard-button"
+						for="my_modal_7"
+						class="btn"
+						>+ New Leaderboard</label
+					>
+					<div class="dropdown dropdown-end">
+						<div
+							tabindex="0"
+							role="button"
+							class="btn btn-ghost lg:hidden"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="h-5 w-5"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M4 6h16M4 12h8m-8 6h16"
+								></path>
+							</svg>
+						</div>
+						<ul
+							tabindex="0"
+							class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
+						>
+							<li>
+								<a
+									class="btn btn-link text-neutral-content link-hover btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit"
+									href="https://docs.topktoday.dev"
+									>Docs</a
+								>
+							</li>
+							<li>
+								<a
+									class="btn btn-link text-neutral-content link-hover btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit"
+									href="/pricing/"
+									>Pricing</a
+								>
+							</li>
+
+							{
+								!isLoggedIn && (
+									<>
+										<li>
+											<a
+												href="/login"
+												class="btn btn-link text-neutral-content link-hover btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit"
+											>
+												Log
+												in
+											</a>
+										</li>
+										<li>
+											<a
+												class="btn btn-link link-hover text-neutral-content btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit"
+												href="/register/"
+											>
+												Register
+											</a>
+										</li>
+									</>
+								)
+							}
+
+							{
+								isLoggedIn && (
+									<li>
+										<a
+											class="btn btn-link link-hover link-info btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md w-fit"
+											href="/account/"
+										>
+											Account
+										</a>
+									</li>
+								)
+							}
+						</ul>
+					</div>
+				</div>
+				<div class="navbar-end hidden lg:flex">
 					<ul
 						class="menu menu-horizontal rounded-box gap-1"
 					>

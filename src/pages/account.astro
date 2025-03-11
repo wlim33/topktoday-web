@@ -2,6 +2,7 @@
 import MainLayout from "@/layouts/main.astro";
 import AccountLayout from "@/layouts/AccountNavigation.astro";
 import AccountOverview from "@/components/AccountOverview.astro";
+import AccountUsage from "@/components/AccountUsage.astro";
 import { getUserLeaderboards, getUserSubmissions } from "@/lib/server/api";
 
 const { user } = Astro.locals;
@@ -19,5 +20,6 @@ submissions = (await getUserSubmissions(user?.id)).submissions;
 			leaderboards={leaderboards}
 			submissions={submissions}
 		/>
+		<AccountUsage />
 	</AccountLayout>
 </MainLayout>

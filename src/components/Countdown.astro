@@ -1,0 +1,121 @@
+---
+import { getRemaining } from "@/lib/server/utils";
+const { start, rawduration } = Astro.props;
+
+const remainingDuration = getRemaining(start, rawduration);
+---
+
+<div class="text-md opacity-60">
+	<div
+		id="countdown-frontmatter"
+		data-duration={rawduration}
+		data-start={start}
+	>
+	</div>
+	<div class="flex justify-center gap-2">
+		<span class="countdown font-mono text-md"> Closes in </span>
+		<span class="countdown font-mono text-md">
+			<span
+				id="timer-days"
+				style=`--value:${remainingDuration.days()};`
+				aria-live="polite"
+				aria-label=`${remainingDuration.days()};`
+				>{remainingDuration.days()}</span
+			>
+			&nbsp;days
+		</span>
+		<span class="countdown font-mono text-md">
+			<span
+				id="timer-hours"
+				style=`--value:${remainingDuration.hours()};`
+				aria-live="polite"
+				aria-label=`${remainingDuration.hours()};`
+				>{remainingDuration.hours()}</span
+			>
+			&nbsp;hours
+		</span>
+		<span class="countdown font-mono text-md">
+			<span
+				id="timer-min"
+				style=`--value:${remainingDuration.minutes()};`
+				aria-live="polite"
+				aria-label=`${remainingDuration.minutes()};`
+				>{remainingDuration.minutes()}</span
+			>
+
+			&nbsp;min
+		</span>
+		<span class="countdown font-mono text-md">
+			<span
+				id="timer-seconds"
+				style=`--value:${remainingDuration.seconds()};`
+				aria-live="polite"
+				aria-label=`${remainingDuration.seconds()};`
+				>{remainingDuration.seconds()}</span
+			>
+			&nbsp;sec
+		</span>
+	</div>
+	<script>
+		import {
+			parseRawLeaderboardInfo,
+			getRemaining,
+		} from "@/lib/client/utils";
+		const data = document.querySelector(
+			"#countdown-frontmatter",
+		) as HTMLDivElement;
+
+		let rawDuration = 1000000000;
+		if (data !== null && data.dataset.duration !== undefined) {
+			rawDuration = +data.dataset.duration;
+		}
+
+		let rawStart = "2025-03-11T21:58:25.280689Z";
+		if (data !== null && data.dataset.start !== undefined) {
+			rawStart = data.dataset.start;
+		}
+
+		const { duration, start } = parseRawLeaderboardInfo(
+			rawStart,
+			rawDuration,
+		);
+
+		const day_elem = document.querySelector(
+			"#timer-days",
+		) as HTMLSpanElement;
+		const hours_elem = document.querySelector(
+			"#timer-hours",
+		) as HTMLSpanElement;
+		const minutes_elem = document.querySelector(
+			"#timer-min",
+		) as HTMLSpanElement;
+		const sec_elem = document.querySelector(
+			"#timer-seconds",
+		) as HTMLSpanElement;
+		function setValue(elem: HTMLSpanElement, value: number) {
+			elem.setAttribute("style", `--value:${value}`);
+			elem.setAttribute("aria-label", `${value}`);
+			elem.innerText = value.toString();
+		}
+		const updateElements = () => {
+			let remaining = getRemaining(start, duration);
+			let leadingZeros = false;
+
+			leadingZeros = leadingZeros && remaining.days() === 0;
+			day_elem.hidden = leadingZeros;
+			setValue(day_elem, remaining.days());
+			leadingZeros = leadingZeros && remaining.hours() === 0;
+			hours_elem.hidden = leadingZeros;
+			setValue(hours_elem, remaining.hours());
+			leadingZeros =
+				leadingZeros && remaining.minutes() === 0;
+			minutes_elem.hidden = leadingZeros;
+			setValue(minutes_elem, remaining.minutes());
+			leadingZeros =
+				leadingZeros && remaining.seconds() === 0;
+			sec_elem.hidden = leadingZeros;
+			setValue(sec_elem, remaining.seconds());
+		};
+		const intervalID = setInterval(updateElements, 1000);
+	</script>
+</div>

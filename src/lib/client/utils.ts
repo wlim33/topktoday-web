@@ -17,6 +17,25 @@ export type Config<T extends Schema> = {
 	onBusy: string;
 };
 
+
+export function parseRawLeaderboardInfo(rawStart: string, rawDuration: number) {
+
+	const parsed_duration = dayjs.duration({
+		milliseconds: rawDuration / 1000000,
+	});
+
+	const start = dayjs(rawStart);
+	return { duration: parsed_duration, start }
+
+}
+
+export function getRemaining(start: dayjs.Dayjs, duration_obj: duration.Duration) {
+	const now = dayjs();
+
+	const remaining = now.diff(start);
+	return duration_obj.subtract(remaining)
+}
+
 export function formatTimeAgo(timestamp: string): string {
 	return dayjs(
 		timestamp
@@ -54,23 +73,81 @@ export function addCarousel(intervalId: null | ReturnType<typeof setInterval>, f
 
 }
 
+
+class CountdownTimer {
+	duration: number = 3600;
+	granularity: number = 1000;
+	tickFtns: Function[] = [];
+	running: boolean = false;
+
+	constructor(duration: number, granularity: number) {
+		this.granularity = granularity;
+		this.duration = duration;
+	}
+
+	start() {
+		if (this.running) {
+			return;
+		}
+		this.running = true;
+		var start = Date.now(),
+			that = this,
+			diff, obj: CountdownTimer;
+
+		(function timer() {
+			diff = that.duration - (((Date.now() - start) / 1000) | 0);
+
+			if (diff > 0) {
+				setTimeout(timer, that.granularity);
+			} else {
+				diff = 0;
+				that.running = false;
+			}
+
+			that.tickFtns.forEach(function(ftn) {
+			}, that);
+		}());
+	};
+
+	onTick(ftn: Function) {
+		if (typeof ftn === 'function') {
+			this.tickFtns.push(ftn);
+		}
+		return this;
+	};
+
+	expired() {
+		return !this.running;
+	};
+
+
+
+}
+
+
 const words: [string, string][] = [["most active users", "in your Discord server"], ["fastest speedrunners", "in your video game"], ["top teams", "in your sports league"], ["funniest coworkers", "in your Slack channel"]]
 export function getNextText(current_i: number): [number, string, string] {
 	let next_i = (current_i + 1) % words.length;
 	return [next_i, words[next_i][0], words[next_i][1]]
 }
 
-export function hideBasedOn(input: HTMLInputElement, target: HTMLElement, invert: boolean = false) {
-	function update() {
-		if (invert) {
-			target.hidden = !input.checked
-		} else {
-			target.hidden = input.checked
+export function hideBasedOn(hide_elem: HTMLInputElement, show_elem: HTMLInputElement, target: HTMLElement) {
+	function show() {
+		if (show_elem.checked) {
+			target.hidden = false
 		}
 	}
 
-	input.addEventListener("change", update)
-	update()
+	function hide() {
+		if (hide_elem.checked) {
+			target.hidden = true
+		}
+	}
+
+	hide_elem.addEventListener("change", hide)
+	show_elem.addEventListener("change", show)
+	hide()
+	show()
 
 
 

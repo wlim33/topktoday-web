@@ -1,5 +1,6 @@
 ---
 import CopyLink from "@/components/CopyLink.astro";
+import Countdown from "@/components/Countdown.astro";
 import PageLayout from "@/layouts/main.astro";
 import {
 	getLeaderboard,
@@ -39,6 +40,7 @@ try {
 ---
 
 <PageLayout title="Leaderboard" leaderboard={leaderboard_id}>
+	<div id="leaderboard-frontmatter" data-created={info.created_at} data-multpile={info.allow_multiple} data-highest={info.highest_first} data-time={info.is_time}></div>
 	<div class="flex flex-col h-screen items-center bg-base-200">
 		<div class="flex flex-col min-w-full xl:min-w-196 lg:min-w-196">
 			<div class="flex inline-flex justify-between my-4">
@@ -163,43 +165,36 @@ try {
 					</tfoot>
 
 					<caption>
-						<div class="text-md">
-							{
-								info.highest_first
-									? "Highest scores appear higher."
-									: "Lower times appear higher."
-							}
-						</div>
+						<Countdown rawduration={info.duration} start={info.start}/>
 					</caption>
 				</table>
-				<small>*scores are not verified.</small>
 			</div>
+			<small class="opacity-60"
+				>*scores are not verified.</small
+			>
+		</div>
 
-			<h4 class="text-l px-2">Verifiers:</h4>
-			<div class="px-2">
-				{
-					verifiers.map(
-						(
-							verifier: Verifier,
-							idx: number,
-						) => (
-							<>
-								<a
-									class="link link-info link-hover"
-									href={`/account/${verifier.id}`}
-								>
-									{
-										verifier.username
-									}
-								</a>
-								{idx + 1 <
-									verifiers.length &&
-									", "}
-							</>
-						),
-					)
-				}
-			</div>
+		<h4 class="text-l px-2">Verifiers:</h4>
+		<div class="px-2">
+			{
+				verifiers.map(
+					(verifier: Verifier, idx: number) => (
+						<>
+							<a
+								class="link link-info link-hover"
+								href={`/account/${verifier.id}`}
+							>
+								{
+									verifier.username
+								}
+							</a>
+							{idx + 1 <
+								verifiers.length &&
+								", "}
+						</>
+					),
+				)
+			}
 		</div>
 	</div>
 </PageLayout>

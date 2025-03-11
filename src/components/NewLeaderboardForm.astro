@@ -18,9 +18,7 @@ console.log(ismodal);
 	<modal-form data-ismodal={ismodal}>
 		<form id="new-leaderboard">
 			<fieldset class="fieldset">
-				<legend class="fieldset-legend">
-					Public Title
-				</legend>
+				<legend class="fieldset-legend"> Title </legend>
 				<input
 					class="input w-full"
 					name="title"
@@ -147,6 +145,7 @@ console.log(ismodal);
 				<label
 					id="custom-start-date-picker"
 					class="input w-full"
+					hidden
 				>
 					<span class="label">Start date:</span>
 					<input
@@ -154,6 +153,7 @@ console.log(ismodal);
 						type="datetime-local"
 						name="start-date-custom"
 						aria-label="Start date local"
+						value={today}
 					/>
 				</label>
 			</fieldset>
@@ -214,6 +214,9 @@ console.log(ismodal);
 				const message = this.dataset.ismodal;
 
 				hideBasedOn(
+					document.querySelector(
+						"#start-immediately-yes",
+					),
 					document.querySelector(
 						"#start-immediately-no",
 					),

@@ -2,8 +2,10 @@ import { auth } from "@/auth";
 import type { APIContext, MiddlewareNext } from "astro";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import duration from "dayjs/plugin/duration";
 
 dayjs.extend(relativeTime);
+dayjs.extend(duration);
 export type Verifier = {
 	id: string,
 	added_at: string,
@@ -30,6 +32,19 @@ export type LeaderboardInfo = {
 	created_at: string
 }
 
+export function getRemaining(rawStart: string, rawDuration: number) {
+
+	const parsed_duration = dayjs.duration({
+		milliseconds: rawDuration / 1000000,
+	});
+
+	const start = dayjs(rawStart);
+
+	const now = dayjs();
+
+	const remaining = now.diff(start);
+	return parsed_duration.subtract(remaining)
+}
 
 export function formatTimeAgo(timestamp: string): string {
 	return dayjs(

@@ -1,0 +1,142 @@
+---
+const { info } = Astro.props;
+
+const { user } = Astro.locals;
+const isLoggedIn: boolean = user !== null && !user.isAnonymous;
+---
+
+<new-submission
+	class="card bg-base-100 shadow-sm border-base-300 text-base-content px-4 py-2 mb-2"
+>
+	<header class="text-xl">
+		<h3>New Submission</h3>
+	</header>
+
+	<form id="new-submission-form">
+		<fieldset class="fieldset">
+			<legend class="fieldset-legend">
+				{info.is_time ? "Time" : "Score"}
+			</legend>
+			<input
+				id="new-submission-score"
+				name="score"
+				placeholder={info.is_time
+					? "12:00:00"
+					: "90000"}
+				aria-label="submission-score"
+				type="number"
+				step="0.0001"
+				class="input w-full"
+			/>
+
+			<label class="fieldset-label">
+				{
+					info.highest_first
+						? "The highest values will be placed at the top of the leaderboard."
+						: "The lowest values will be placed at the top of the leaderboard."
+				}
+			</label>
+		</fieldset>
+
+		<fieldset class="fieldset">
+			<legend class="fieldset-legend">
+				Link attachment</legend
+			>
+			<input
+				id="new-submission-link"
+				name="link"
+				placeholder="https://www.youtube.com/watch?v=kdKFyHPXdfY"
+				aria-label="anonymous-submission-link"
+				autocomplete="display-name"
+				type="url"
+				class="input w-full"
+			/>
+			<label class="fieldset-label">
+				This link will be available to anyone with
+				access to this leaderboard.
+			</label>
+		</fieldset>
+		<div class="flex flex-col my-4">
+			<div class="flex justify-center">
+				<button
+					class="btn btn-secondary btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg w-fit"
+					type="submit"
+					>Submit for validation</button
+				>
+			</div>
+		</div>
+
+		{
+			isLoggedIn && (
+				<span class="text-center">
+					<a
+						href="/login"
+						id="login-link"
+						style="cursor: pointer;"
+						class="link link-primary"
+					>
+						Log in
+					</a>{" "}
+					or{" "}
+					<a
+						href="/register"
+						id="register-link"
+						class="link link-primary"
+						style="cursor: pointer;"
+					>
+						register
+					</a>{" "}
+					to customize your display name.
+				</span>
+			)
+		}
+	</form>
+	<div role="alert" aria-live="assertive"></div>
+	<script>
+		import { setupForm } from "@/lib/client/utils";
+		import { addScore } from "@/lib/client/formSubmits";
+		import { getPageData } from "@/lib/client/utils";
+		import { newSubmission } from "@/lib/client/schemas";
+		import { navigate } from "astro:transitions/client";
+
+		class NewSubmission extends HTMLElement {
+			connectedCallback() {
+				setupForm(
+					this.querySelector(
+						"#new-submission-form",
+					) as HTMLFormElement,
+					{
+						onBusy: "Submitting...",
+						schema: newSubmission,
+						emitEvent: new CustomEvent(
+							"update",
+							{
+								bubbles: true,
+							},
+						),
+						onSubmit: async (submission: {
+							file: File;
+							link: string;
+							score: number;
+						}) => {
+							await addScore(
+								submission.score,
+								submission.link,
+							);
+
+							navigate(
+								`/leaderboard/${
+									getPageData()
+										.leaderboard
+								}`,
+							);
+							return true;
+						},
+					},
+				);
+			}
+		}
+
+		customElements.define("new-submission", NewSubmission);
+	</script>
+</new-submission>

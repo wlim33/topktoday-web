@@ -2,10 +2,12 @@
 import "@/styles/styles.css";
 import { ClientRouter } from "astro:transitions";
 import NewLeaderboardForm from "@/components/NewLeaderboardForm.astro";
+import { getVersion } from "@/lib/server/api";
 const { title, leaderboard, submission } = Astro.props;
 
 const isLoggedIn: boolean =
 	Astro.locals.user !== null && !Astro.locals.user.isAnonymous;
+const version = await getVersion();
 ---
 
 <html lang="en" transition:name="slide">
@@ -49,7 +51,6 @@ const isLoggedIn: boolean =
 						class="btn btn-primary btn-sm sm:btn-sm lg:btn-md xl:btn-md w-fit mx-3"
 						id="new-leaderboard-button"
 						for="my_modal_7"
-						class="btn"
 						>+ New Leaderboard</label
 					>
 					<div class="dropdown dropdown-end">
@@ -218,7 +219,11 @@ const isLoggedIn: boolean =
 				</p>
 
 				<small>
-					Version <span>0.0.8</span>
+					API Version <a
+						class="link link-primary"
+						href="https://docs.topktoday.dev"
+						>{version}</a
+					>
 				</small>
 			</aside>
 		</footer>

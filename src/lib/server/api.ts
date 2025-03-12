@@ -93,6 +93,13 @@ export async function getUserSubmissions(userId: string) {
 	return body
 }
 
+export async function getVersion() {
+	const path = pathJoin([import.meta.env.PUBLIC_API_DOMAIN, "health"])
+	const resp = await fetch(path);
+	const body = await resp.json()
+	return body.message
+}
+
 export async function getVerifiers(leaderboard_id: string) {
 	const path = pathJoin([import.meta.env.PUBLIC_API_DOMAIN, "leaderboard", leaderboard_id, "verifiers"])
 	const resp = await fetch(path);

@@ -64,7 +64,6 @@ import SocialLoginButtons from "@/components/SocialLoginButtons.astro";
 							>
 						</div>
 					</form>
-					<hr />
 					<div role="alert" aria-live="assertive">
 					</div>
 
@@ -80,7 +79,7 @@ import SocialLoginButtons from "@/components/SocialLoginButtons.astro";
 					import { setupForm } from "@/lib/client/utils";
 					import { loginForm } from "@/lib/client/schemas";
 					import { authClient } from "@/lib/client/auth-client";
-import { navigate } from "astro:transitions/client";
+					import { navigate } from "astro:transitions/client";
 					setupForm(
 						document.querySelector(
 							"#signin-form",
@@ -108,7 +107,9 @@ import { navigate } from "astro:transitions/client";
 										.error
 										.message as string;
 								}
-								navigate('/account')
+								navigate(
+									"/account",
+								);
 								return true;
 							},
 						},

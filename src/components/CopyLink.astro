@@ -1,5 +1,5 @@
 ---
-const { id } = Astro.props;
+const { id, text } = Astro.props;
 ---
 
 <div>
@@ -7,10 +7,11 @@ const { id } = Astro.props;
 		class="tooltip tooltip-right"
 		data-tip="Click to copy"
 		data-placement="right"
+		data-copylink={`www.topktoday.dev/leaderboard/${id}`}
 		id="copy-link"
 	>
-		<u class="text-xs lg:text-md xl:text-md">
-			{`www.topktoday.dev/leaderboard/${id}`}
+		<u class="lg:text-2xl xl:text-3xl link link-primary link-hover">
+			{text}
 		</u>
 	</div>
 	<script>
@@ -26,7 +27,8 @@ const { id } = Astro.props;
 					"Copied to clipboard!",
 				);
 				navigator.clipboard.writeText(
-					copyLink.innerHTML,
+					copyLink.dataset.copylink ||
+						"www.topktoday.dev",
 				);
 
 				setTimeout(() => {

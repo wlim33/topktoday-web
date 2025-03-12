@@ -5,16 +5,20 @@ const { start, rawduration } = Astro.props;
 const remainingDuration = getRemaining(start, rawduration);
 ---
 
-<div class="text-md opacity-60">
-	<div
-		id="countdown-frontmatter"
-		data-duration={rawduration}
-		data-start={start}
-	>
-	</div>
+<count-down
+	class="text-md opacity-60"
+	data-duration={rawduration}
+	data-start={start}
+>
 	<div class="flex justify-center gap-2">
 		<span class="countdown font-mono text-md"> Closes in </span>
-		<span class="countdown font-mono text-md">
+		<span
+			class="countdown font-mono text-md"
+			id="days-section"
+			hidden={remainingDuration.days() === 0
+				? "true"
+				: undefined}
+		>
 			<span
 				id="timer-days"
 				style=`--value:${remainingDuration.days()};`
@@ -24,7 +28,13 @@ const remainingDuration = getRemaining(start, rawduration);
 			>
 			&nbsp;days
 		</span>
-		<span class="countdown font-mono text-md">
+		<span
+			class="countdown font-mono text-md"
+			id="hours-section"
+			hidden={remainingDuration.hours() === 0
+				? "true"
+				: undefined}
+		>
 			<span
 				id="timer-hours"
 				style=`--value:${remainingDuration.hours()};`
@@ -34,7 +44,7 @@ const remainingDuration = getRemaining(start, rawduration);
 			>
 			&nbsp;hours
 		</span>
-		<span class="countdown font-mono text-md">
+		<span class="countdown font-mono text-md" id="min-section">
 			<span
 				id="timer-min"
 				style=`--value:${remainingDuration.minutes()};`
@@ -45,7 +55,7 @@ const remainingDuration = getRemaining(start, rawduration);
 
 			&nbsp;min
 		</span>
-		<span class="countdown font-mono text-md">
+		<span class="countdown font-mono text-md" id="seconds-section">
 			<span
 				id="timer-seconds"
 				style=`--value:${remainingDuration.seconds()};`
@@ -60,62 +70,85 @@ const remainingDuration = getRemaining(start, rawduration);
 		import {
 			parseRawLeaderboardInfo,
 			getRemaining,
+			setCountdownValue,
 		} from "@/lib/client/utils";
-		const data = document.querySelector(
-			"#countdown-frontmatter",
-		) as HTMLDivElement;
 
-		let rawDuration = 1000000000;
-		if (data !== null && data.dataset.duration !== undefined) {
-			rawDuration = +data.dataset.duration;
+		class Countdown extends HTMLElement {
+			connectedCallback() {
+				let rawDuration = 1000000000;
+				if (this.dataset.duration !== undefined) {
+					rawDuration = +this.dataset.duration;
+				}
+
+				let rawStart = "2025-03-11T21:58:25.280689Z";
+				if (this.dataset.start !== undefined) {
+					rawStart = this.dataset.start;
+				}
+
+				const { duration, start } =
+					parseRawLeaderboardInfo(
+						rawStart,
+						rawDuration,
+					);
+
+				const day_section = document.querySelector(
+					"#days-section",
+				) as HTMLSpanElement;
+				const hours_section = document.querySelector(
+					"#hours-section",
+				) as HTMLSpanElement;
+
+				const day_elem = document.querySelector(
+					"#timer-days",
+				) as HTMLSpanElement;
+				const hours_elem = document.querySelector(
+					"#timer-hours",
+				) as HTMLSpanElement;
+				const minutes_elem = document.querySelector(
+					"#timer-min",
+				) as HTMLSpanElement;
+				const sec_elem = document.querySelector(
+					"#timer-seconds",
+				) as HTMLSpanElement;
+				const updateElements = () => {
+					let remaining = getRemaining(
+						start,
+						duration,
+					);
+					let leadingZeros = true;
+
+					leadingZeros =
+						leadingZeros &&
+						remaining.days() === 0;
+					day_section.hidden = leadingZeros;
+					setCountdownValue(
+						day_elem,
+						remaining.days(),
+					);
+					leadingZeros =
+						leadingZeros &&
+						remaining.hours() === 0;
+					hours_section.hidden = leadingZeros;
+					setCountdownValue(
+						hours_elem,
+						remaining.hours(),
+					);
+					setCountdownValue(
+						minutes_elem,
+						remaining.minutes(),
+					);
+					setCountdownValue(
+						sec_elem,
+						remaining.seconds(),
+					);
+				};
+				const intervalID = setInterval(
+					updateElements,
+					1000,
+				);
+			}
 		}
 
-		let rawStart = "2025-03-11T21:58:25.280689Z";
-		if (data !== null && data.dataset.start !== undefined) {
-			rawStart = data.dataset.start;
-		}
-
-		const { duration, start } = parseRawLeaderboardInfo(
-			rawStart,
-			rawDuration,
-		);
-
-		const day_elem = document.querySelector(
-			"#timer-days",
-		) as HTMLSpanElement;
-		const hours_elem = document.querySelector(
-			"#timer-hours",
-		) as HTMLSpanElement;
-		const minutes_elem = document.querySelector(
-			"#timer-min",
-		) as HTMLSpanElement;
-		const sec_elem = document.querySelector(
-			"#timer-seconds",
-		) as HTMLSpanElement;
-		function setValue(elem: HTMLSpanElement, value: number) {
-			elem.setAttribute("style", `--value:${value}`);
-			elem.setAttribute("aria-label", `${value}`);
-			elem.innerText = value.toString();
-		}
-		const updateElements = () => {
-			let remaining = getRemaining(start, duration);
-			let leadingZeros = false;
-
-			leadingZeros = leadingZeros && remaining.days() === 0;
-			day_elem.hidden = leadingZeros;
-			setValue(day_elem, remaining.days());
-			leadingZeros = leadingZeros && remaining.hours() === 0;
-			hours_elem.hidden = leadingZeros;
-			setValue(hours_elem, remaining.hours());
-			leadingZeros =
-				leadingZeros && remaining.minutes() === 0;
-			minutes_elem.hidden = leadingZeros;
-			setValue(minutes_elem, remaining.minutes());
-			leadingZeros =
-				leadingZeros && remaining.seconds() === 0;
-			sec_elem.hidden = leadingZeros;
-			setValue(sec_elem, remaining.seconds());
-		};
-		const intervalID = setInterval(updateElements, 1000);
+		customElements.define("count-down", Countdown);
 	</script>
-</div>
+</count-down>

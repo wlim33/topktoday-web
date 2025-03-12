@@ -36,6 +36,21 @@ export function getRemaining(start: dayjs.Dayjs, duration_obj: duration.Duration
 	return duration_obj.subtract(remaining)
 }
 
+
+export function setCountdownValue(
+	elem: HTMLSpanElement,
+	value: number,
+) {
+	elem.setAttribute(
+		"style",
+		`--value:${value}`,
+	);
+	elem.setAttribute(
+		"aria-label",
+		`${value}`,
+	);
+	elem.innerText = value.toString();
+}
 export function formatTimeAgo(timestamp: string): string {
 	return dayjs(
 		timestamp
@@ -104,7 +119,7 @@ class CountdownTimer {
 				that.running = false;
 			}
 
-			that.tickFtns.forEach(function(ftn) {
+			that.tickFtns.forEach(function (ftn) {
 			}, that);
 		}());
 	};

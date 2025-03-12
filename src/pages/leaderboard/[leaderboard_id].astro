@@ -1,6 +1,7 @@
 ---
 import CopyLink from "@/components/CopyLink.astro";
 import Countdown from "@/components/Countdown.astro";
+import NewSubmission from "@/components/NewSubmissionForm.astro";
 import PageLayout from "@/layouts/main.astro";
 import {
 	getLeaderboard,
@@ -37,29 +38,41 @@ try {
 	console.log(e);
 	Astro.redirect("/system-down");
 }
+
+const showModal = Astro.url.searchParams.get("showModal") || "";
 ---
 
 <PageLayout title="Leaderboard" leaderboard={leaderboard_id}>
-	<div id="leaderboard-frontmatter" data-created={info.created_at} data-multpile={info.allow_multiple} data-highest={info.highest_first} data-time={info.is_time}></div>
+	<div
+		id="leaderboard-frontmatter"
+		data-created={info.created_at}
+		data-multpile={info.allow_multiple}
+		data-highest={info.highest_first}
+		data-time={info.is_time}
+	>
+	</div>
+	{showModal && <div>iaresntaiersnt</div>}
 	<div class="flex flex-col h-screen items-center bg-base-200">
 		<div class="flex flex-col min-w-full xl:min-w-196 lg:min-w-196">
-			<div class="flex inline-flex justify-between my-4">
+			<div class="flex inline-flex justify-between my-4 h-16">
 				<div
 					class="flex flex-col justify-around min-h-min"
 				>
-					<h2
-						class="lg:text-2xl xl:text-3xl link link-primary link-hover"
-					>
-						{info.title}
-					</h2>
-					<CopyLink id={leaderboard_id} />
+					<CopyLink
+						id={leaderboard_id}
+						text={info.title}
+					/>
+
+					<Countdown
+						rawduration={info.duration}
+						start={info.start}
+					/>
 				</div>
 				<div class="flex flex-col justify-around">
-					<a
-						type="button"
+					<label
 						class="btn btn-soft btn-accent btn-xs sm:btn-sm md:btn-md lg:btn-md xl:btn-md"
-						href={`/leaderboard/${leaderboard_id}/submission`}
-						>+ New Submission</a
+						for="new-submission-modal"
+						>+ New Submission</label
 					>
 				</div>
 			</div>
@@ -163,10 +176,6 @@ try {
 							>
 						</tr>
 					</tfoot>
-
-					<caption>
-						<Countdown rawduration={info.duration} start={info.start}/>
-					</caption>
 				</table>
 			</div>
 			<small class="opacity-60"
@@ -196,5 +205,20 @@ try {
 				)
 			}
 		</div>
+	</div>
+
+	<input
+		type="checkbox"
+		id="new-submission-modal"
+		class="modal-toggle"
+		checked={showModal ? "true" : undefined}
+	/>
+	<div class="modal" role="dialog">
+		<div class="modal-box">
+			<NewSubmission info={info} />
+		</div>
+		<label class="modal-backdrop" for="new-submission-modal"
+			>Close</label
+		>
 	</div>
 </PageLayout>

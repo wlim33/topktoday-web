@@ -103,7 +103,7 @@ try {
 							class="flex justify-center"
 						>
 							<button
-								class="btn btn-secondary btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg w-fit"
+								class="btn btn-accent btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg w-fit"
 								type="submit"
 								>Submit for
 								validation</button
@@ -135,15 +135,14 @@ try {
 					import { newSubmission } from "@/lib/client/schemas";
 					import { navigate } from "astro:transitions/client";
 
-					document.addEventListener(
-						"astro:page-load",
-						() => {
+					class NewSubmissionModal extends HTMLElement {
+						connectedCallback() {
 							setupForm(
-								document.querySelector(
+								this.querySelector(
 									"#new-submission-form",
 								) as HTMLFormElement,
 								{
-									onBusy: "Updating...",
+									onBusy: "Submitting...",
 									schema: newSubmission,
 									emitEvent: new CustomEvent(
 										"update",
@@ -171,7 +170,12 @@ try {
 									},
 								},
 							);
-						},
+						}
+					}
+
+					customElements.define(
+						"submission-modal",
+						NewSubmissionModal,
 					);
 				</script>
 			</div>

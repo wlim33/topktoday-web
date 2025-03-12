@@ -53,6 +53,14 @@ export function formatTimeAgo(timestamp: string): string {
 		true,
 	) + " ago"
 }
+export function formatHistoryTimestamp(timestamp: string): string {
+	return dayjs(
+		timestamp
+	).fromNow(
+		true,
+	) + " ago"
+
+}
 
 export function pathJoin(parts: string[]) {
 	const separator = "/";
@@ -88,3 +96,20 @@ export async function signInAnonymousIfUnauthorized(context: APIContext, next: M
 	}
 	return next()
 }
+
+export const youtubeUrlToEmbed = (urlString: string | undefined | null): string | null | undefined => {
+	const template = (v: string) => `https://www.youtube.com/embed/${v}`;
+	if (urlString && URL.canParse(urlString)) {
+		const url = new URL(urlString);
+		// short URL
+		if (url.hostname === 'www.youtu.be' || url.hostname === 'youtu.be') {
+			return template(url.pathname.startsWith('/') ? url.pathname.substring(1) : url.pathname);
+		}
+		// regular URL
+		const v = url.searchParams.get('v');
+		if ((url.hostname === 'www.youtube.com' || url.hostname === 'youtube.com') && v) {
+			return template(v);
+		}
+	}
+	return urlString;
+};

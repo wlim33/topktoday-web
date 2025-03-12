@@ -58,9 +58,14 @@ const showModal = Astro.url.searchParams.get("showModal") || "";
 					class="flex flex-col justify-around min-h-min"
 				>
 					<CopyLink
-						id={leaderboard_id}
-						text={info.title}
-					/>
+						link={`www.topktoday.dev/leaderboard/${leaderboard_id}`}
+					>
+						<u
+							class="lg:text-2xl xl:text-3xl link link-primary link-hover"
+						>
+							{info.title}
+						</u>
+					</CopyLink>
 
 					<Countdown
 						rawduration={info.duration}
@@ -213,7 +218,7 @@ const showModal = Astro.url.searchParams.get("showModal") || "";
 		checked={showModal ? "true" : undefined}
 	/>
 	<div class="modal" role="dialog">
-		<div class="modal-box">
+		<div class="modal-box w-sm xs:w-xs overflow-x-clip">
 			<NewSubmission info={info} />
 		</div>
 		<label class="modal-backdrop" for="new-submission-modal"

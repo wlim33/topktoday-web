@@ -1,0 +1,10 @@
+---
+import { youtubeUrlToEmbed } from "@/lib/server/utils";
+const { link } = Astro.props;
+
+//src="https://www.youtube.com/embed/tgbNymZ7vqY"
+---
+
+<div class="w-full h-64 sm:h-96 lg:h-128">
+	<iframe src={youtubeUrlToEmbed(link)} class="w-full h-full"> </iframe>
+</div>

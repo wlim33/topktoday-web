@@ -1,47 +1,51 @@
 ---
-const { id, text } = Astro.props;
+const { link, directionBottom = false } = Astro.props;
 ---
 
-<div>
-	<div
-		class="tooltip tooltip-right"
+<copy-link>
+	<span
+		class={directionBottom
+			? "tooltip tooltip-bottom"
+			: "tooltip tooltip-right"}
 		data-tip="Click to copy"
-		data-placement="right"
-		data-copylink={`www.topktoday.dev/leaderboard/${id}`}
+		data-copylink={link}
 		id="copy-link"
 	>
-		<u class="lg:text-2xl xl:text-3xl link link-primary link-hover">
-			{text}
-		</u>
-	</div>
+		<slot />
+	</span>
 	<script>
-		const copyLink = document.querySelector(
-			"#copy-link",
-		) as HTMLSpanElement;
-
-		document.addEventListener("astro:page-load", () => {
-			copyLink.addEventListener("click", (e) => {
-				e.preventDefault();
-				copyLink.setAttribute(
-					"data-tip",
-					"Copied to clipboard!",
-				);
-				navigator.clipboard.writeText(
-					copyLink.dataset.copylink ||
-						"www.topktoday.dev",
-				);
-
-				setTimeout(() => {
-					copyLink.removeAttribute("data-tip");
+		class CopyLink extends HTMLElement {
+			connectedCallback() {
+				const copyLink = this.querySelector(
+					"#copy-link",
+				) as HTMLSpanElement;
+				copyLink.addEventListener("click", (e) => {
+					e.preventDefault();
+					copyLink.setAttribute(
+						"data-tip",
+						"Copied to clipboard!",
+					);
+					navigator.clipboard.writeText(
+						copyLink.dataset.copylink ||
+							"www.topktoday.dev",
+					);
 
 					setTimeout(() => {
-						copyLink.setAttribute(
+						copyLink.removeAttribute(
 							"data-tip",
-							"Click to copy",
 						);
+
+						setTimeout(() => {
+							copyLink.setAttribute(
+								"data-tip",
+								"Click to copy",
+							);
+						}, 1000);
 					}, 1000);
-				}, 1000);
-			});
-		});
+				});
+			}
+		}
+
+		customElements.define("copy-link", CopyLink);
 	</script>
-</div>
+</copy-link>

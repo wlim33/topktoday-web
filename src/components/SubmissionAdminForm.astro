@@ -1,0 +1,147 @@
+---
+const { isVerified } = Astro.props;
+---
+
+<submission-admin
+	class="card bg-base-100 shadow-sm border border-base-200 text-base-content mb-2 items-center w-fit"
+	id="leaderboard-article"
+>
+	<div class="card-body w-fit">
+		<h3 class="text-xl font-semibold">Review Submission</h3>
+
+		<form id="validate-submission" class="flex flex-col gap-4">
+			<fieldset class="fieldset w-fit">
+				<label
+					for="submission-comment"
+					class="fieldset-label"
+					>This will be available to anyone with
+					access to this leaderboard.</label
+				>
+				<textarea
+					class="textarea w-fit"
+					id="submission-comment"
+					name="comment"
+					rows="4"
+					cols="50"
+					maxlength="300"
+					placeholder="Write your feedback here. (Optional)"
+					aria-placeholder="Write public feedback for this submission."
+				></textarea>
+
+				<p
+					id="character-count-label"
+					class="opacity-80"
+				>
+					(0/300) characters
+				</p>
+			</fieldset>
+			<div class="flex inline-flex justify-center gap-4">
+				<button
+					type="submit"
+					class="btn"
+					id="comment-submit"
+					>Comment without {
+						isVerified
+							? "invalidating"
+							: "verifying"
+					}</button
+				>
+				{
+					isVerified ? (
+						<button
+							type="submit"
+							class="btn btn-warning"
+							id="invalidate-submit"
+						>
+							Invalidate
+						</button>
+					) : (
+						<button
+							type="submit"
+							class="btn btn-success"
+							id="verify-submit"
+						>
+							Verify
+						</button>
+					)
+				}
+			</div>
+		</form>
+		<div role="alert" aria-live="assertive"></div>
+		<script>
+			import { submissionUpdate } from "@/lib/client/schemas";
+			import { setupFormWithMultipleSubmits } from "@/lib/client/utils";
+			import {
+				validateScore,
+				commentOnScore,
+			} from "@/lib/client/formSubmits";
+			import { navigate } from "astro:transitions/client";
+
+			class SubmissionAdminForm extends HTMLElement {
+				connectedCallback() {
+					const countLabel = this.querySelector(
+						"#character-count-label",
+					) as HTMLParagraphElement;
+
+					const textAreaElement =
+						this.querySelector(
+							"#submission-comment",
+						) as HTMLTextAreaElement;
+					var max = +(
+						textAreaElement.getAttribute(
+							"maxlength",
+						) || "0"
+					);
+					textAreaElement.addEventListener(
+						"input",
+						() => {
+							countLabel.innerHTML = `(${textAreaElement.value.length}/${max}) characters`;
+							if (
+								textAreaElement
+									.value
+									.length >=
+								max
+							) {
+								return false;
+							}
+						},
+					);
+
+					setupFormWithMultipleSubmits(
+						this.querySelector(
+							"#validate-submission",
+						) as HTMLFormElement,
+						{
+							onBusy: "Verifying...",
+
+							schema: submissionUpdate,
+							onSubmit: async (
+								formSubmission: any,
+							) => {
+								if (
+									"is_valid" in
+									formSubmission
+								) {
+									await validateScore(
+										formSubmission,
+									);
+								} else {
+									await commentOnScore(
+										formSubmission,
+									);
+								}
+								navigate("");
+								return true;
+							},
+						},
+					);
+				}
+			}
+
+			customElements.define(
+				"submission-admin",
+				SubmissionAdminForm,
+			);
+		</script>
+	</div>
+</submission-admin>

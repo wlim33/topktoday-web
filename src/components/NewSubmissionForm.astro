@@ -1,15 +1,34 @@
 ---
+import CopyLink from "./CopyLink.astro";
 const { info } = Astro.props;
 
 const { user } = Astro.locals;
-const isLoggedIn: boolean = user !== null && !user.isAnonymous;
+console.log(user);
+const isLoggedIn: boolean =
+	user !== null &&
+	user.isAnonymous !== null &&
+	user.isAnonymous !== false;
+const title = `Submit your ${info.is_time ? "time" : "score"} for ${info.title}`;
 ---
 
 <new-submission
-	class="card bg-base-100 shadow-sm border-base-300 text-base-content px-4 py-2 mb-2"
+	class="card bg-base-100 shadow-sm border-base-300 text-base-content w-full"
 >
-	<header class="text-xl">
-		<h3>New Submission</h3>
+	<header class="w-max-full">
+		<span class="lg:text-xl xl:text-2xl">
+			<span> Submit your </span>
+			<span class="underline decoration-dotted">
+				{`${info.is_time ? "time" : "score"} `}
+			</span>
+			<span> for </span>
+			<CopyLink id={info.id} directionBottom={true}>
+				<u
+					class="lg:text-xl xl:text-2xl link link-primary link-hover"
+				>
+					{info.title}
+				</u>
+			</CopyLink>
+		</span>
 	</header>
 
 	<form id="new-submission-form">
@@ -17,17 +36,22 @@ const isLoggedIn: boolean = user !== null && !user.isAnonymous;
 			<legend class="fieldset-legend">
 				{info.is_time ? "Time" : "Score"}
 			</legend>
-			<input
-				id="new-submission-score"
-				name="score"
-				placeholder={info.is_time
-					? "12:00:00"
-					: "90000"}
-				aria-label="submission-score"
-				type="number"
-				step="0.0001"
-				class="input w-full"
-			/>
+			<label class="input">
+				<span class="opacity-50">
+					{info.is_time ? "HH:MM:SS" : "Score"}
+				</span>
+				<input
+					id="new-submission-score"
+					name="score"
+					placeholder={info.is_time
+						? "12:00:00"
+						: "90000"}
+					aria-label="submission-score"
+					type={info.is_time ? "time" : "number"}
+					step="0.001"
+					class="grow"
+				/>
+			</label>
 
 			<label class="fieldset-label">
 				{
@@ -42,24 +66,40 @@ const isLoggedIn: boolean = user !== null && !user.isAnonymous;
 			<legend class="fieldset-legend">
 				Link attachment</legend
 			>
-			<input
-				id="new-submission-link"
-				name="link"
-				placeholder="https://www.youtube.com/watch?v=kdKFyHPXdfY"
-				aria-label="anonymous-submission-link"
-				autocomplete="display-name"
-				type="url"
-				class="input w-full"
-			/>
-			<label class="fieldset-label">
-				This link will be available to anyone with
-				access to this leaderboard.
+			<label class="input validator">
+				<svg
+					class="h-[1em] opacity-50"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					><g
+						stroke-linejoin="round"
+						stroke-linecap="round"
+						stroke-width="2.5"
+						fill="none"
+						stroke="currentColor"
+						><path
+							d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+						></path><path
+							d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+						></path></g
+					></svg
+				>
+				<input
+					name="link"
+					type="url"
+					required
+					placeholder="https://"
+					value="https://"
+					pattern="^(https?://)?([a-zA-Z0-9]([a-zA-Z0-9\-].*[a-zA-Z0-9])?\.)+[a-zA-Z].*$"
+					title="Must be valid URL"
+				/>
 			</label>
+			<p class="validator-hint">Must be valid URL</p>
 		</fieldset>
 		<div class="flex flex-col my-4">
 			<div class="flex justify-center">
 				<button
-					class="btn btn-secondary btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg w-fit"
+					class="btn btn-accent btn-sm md:btn-md lg:btn-lg xl:btn-lg w-fit"
 					type="submit"
 					>Submit for validation</button
 				>
@@ -124,7 +164,7 @@ const isLoggedIn: boolean = user !== null && !user.isAnonymous;
 								submission.link,
 							);
 
-							navigate(
+							await navigate(
 								`/leaderboard/${
 									getPageData()
 										.leaderboard

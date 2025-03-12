@@ -11,6 +11,12 @@ export async function newLeaderboard(userID: string, displayName: string) {
 		body: JSON.stringify({ name: displayName }),
 	});
 }
+export async function getHistory(leaderboard: string, submission: string) {
+	const path = pathJoin([import.meta.env.PUBLIC_API_DOMAIN, "leaderboard", leaderboard, "submission", submission, "history"])
+	const response = await fetch(path);
+	let parsed = await response.json()
+	return parsed
+}
 
 export async function getSubmissionInfo(leaderboard: string, submission: string) {
 	const path = pathJoin([import.meta.env.PUBLIC_API_DOMAIN, "leaderboard", leaderboard, "submission", submission])

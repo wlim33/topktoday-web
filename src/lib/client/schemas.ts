@@ -8,12 +8,37 @@ const displayNameSchema = zod.string().min(3, {
 })
 
 export const newSubmission = zod.object({
-	link: zod.string().url(),
+	link: zod.string().url().regex(/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/, "Link must be a valid youtube video. More options coming soon!"),
 	score: zod.coerce.number()
 }).required()
 
 
+export const submissionUpdate = zod.object({
+	comment: zod.string(),
+	"verify-submit": zod.boolean().optional(),
+	"invalidate-submit": zod.boolean().optional(),
+	"comment-submit": zod.boolean().optional(),
+}).transform((values, ctx) => {
+	let body: { comment: string, is_valid?: boolean } = { comment: values.comment }
 
+	if (values["verify-submit"]) {
+		body.is_valid = true
+		return body
+	} else if (values["invalidate-submit"]) {
+		body.is_valid = false
+		return body
+	} else if (values["comment-submit"]) {
+		return body
+	}
+
+	ctx.addIssue({
+		code: zod.ZodIssueCode.custom,
+		message: "Unknown Error.",
+	});
+
+	return body
+
+});
 export const leaderboardTitle = zod
 	.string()
 	.min(

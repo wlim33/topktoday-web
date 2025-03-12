@@ -1,11 +1,14 @@
 ---
 import CopyLink from "@/components/CopyLink.astro";
+import EmbedSubmissionProof from "@/components/EmbedSubmissionProof.astro";
+import SubmissionAdminForm from "@/components/SubmissionAdminForm.astro";
 import PageLayout from "@/layouts/main.astro";
-import { formatTimeAgo } from "@/lib/server/utils";
+import { formatTimeAgo, formatHistoryTimestamp } from "@/lib/server/utils";
 import {
 	getLeaderboardInfo,
 	getVerifiers,
 	getSubmissionInfo,
+	getHistory,
 } from "@/lib/server/api";
 import { type LeaderboardInfo, type Verifier } from "@/lib/server/utils";
 
@@ -24,6 +27,7 @@ let info: LeaderboardInfo = {
 let verifiers = [];
 const { user } = Astro.locals;
 let submission_info: any;
+let history = [];
 try {
 	info = await getLeaderboardInfo(leaderboard_id as string);
 	submission_info = await getSubmissionInfo(
@@ -31,6 +35,14 @@ try {
 		submission_id as string,
 	);
 	verifiers = (await getVerifiers(leaderboard_id as string)).verifiers;
+	history = (
+		await getHistory(
+			leaderboard_id as string,
+			submission_id as string,
+		)
+	).history;
+	console.log(submission_info);
+	console.log("history", history);
 } catch (e) {
 	console.error(e);
 	Astro.redirect("/system-down");
@@ -41,7 +53,18 @@ const isVerifier =
 	verifiers.some((v: Verifier) => {
 		return user.id === v.id;
 	});
-const formatted_timestamp = formatTimeAgo(submission_info.last_submitted);
+
+const formattedTimestamp = formatTimeAgo(submission_id.last_submitted);
+
+const formattedHistory = history.map((entry) => {
+	return {
+		comment: entry.comment,
+		author: entry.author.username,
+		action: entry.action,
+		timestamp: formatTimeAgo(entry.submitted_at),
+		authorLink: `www.topdevktoday.dev/account/${entry.author.id}`,
+	};
+});
 ---
 
 <PageLayout
@@ -49,155 +72,167 @@ const formatted_timestamp = formatTimeAgo(submission_info.last_submitted);
 	leaderboard={leaderboard_id}
 	submission={submission_id}
 >
-	<div class="flex flex-col h-screen items-center bg-base-200">
-		<div class="flex flex-col min-w-full xl:min-w-154 lg:min-w-154">
+	<div class="flex flex-col h-min-screen items-center bg-base-200">
+		<div class="flex flex-col min-w-full xl:min-w-196 lg:min-w-196">
 			<div class="flex inline-flex justify-between my-4">
 				<div
-					class="flex flex-col justify-around min-h-min"
+					class="flex flex-col justify-around min-h-min w-full"
 				>
-					<h2
-						class="lg:text-2xl xl:text-3xl link link-primary link-hover"
+					<a
+						href={`https://www.topktoday.dev/leaderboard/${leaderboard_id}`}
+						class="text-sm link link-primary link-hover"
 					>
-						<a
-							href={`/leaderboard/${leaderboard_id}`}
-							>{info.title}
-						</a>
-					</h2>
-					<CopyLink id={leaderboard_id} />
+						{info.title}
+					</a>
+					<div
+						class="flex inline-flex justify-between w-full"
+					>
+						<span
+							class="lg:text-xl xl:text-2xl"
+						>
+							<span class="font-bold">
+								{
+									submission_info.score
+								}
+							</span>
+							by <a
+								href={`https://www.topktoday.dev/account/${
+									submission_info
+										.submitted_by
+										.id
+								}`}
+								class="link link-accent link-hover"
+								>{
+									submission_info
+										.submitted_by
+										.username
+								}</a
+							>
+						</span>
+
+						{
+							submission_info.verified ? (
+								<div class="badge badge-soft badge-success badge-md mx-4">
+									Verified
+								</div>
+							) : (
+								<div class="badge badge-soft badge-warning badge-md mx-4">
+									Not
+									Verified
+								</div>
+							)
+						}
+					</div>
 				</div>
 				<div class="flex flex-col justify-around"></div>
 			</div>
 
 			<div
-				class="card bg-base-100 shadow-sm border-base-300 text-base-content mb-2"
+				class="card bg-base-100 shadow-sm border-base-200 text-base-content"
 				id="leaderboard-article"
 			>
 				<div class="card-body">
-					<div class="flex flex-col justify">
-						<div
-							class="flex inline-flex gap-3"
-						>
-							<div class="text-lg">
-								Score:
-							</div>
-							<div class="text-lg">
+					<div class="flex flex-col gap-3">
+						<EmbedSubmissionProof
+							link={submission_info.link}
+						/>
+						<span class="opacity-80">
+							Source:
+							<a
+								class="link"
+								href={submission_info.link}
+							>
 								{
-									submission_info.score
-								}
-							</div>
-						</div>
-
-						<div
-							class="flex inline-flex gap-3"
-						>
-							<div class="text-lg">
-								Link:
-							</div>
-							<div class="text-lg">
-								<a
-									class="link link-info"
-									href={submission_info.link}
-								>
-									{
-										submission_info.link
-									}</a
-								>
-							</div>
-						</div>
-					</div>
-
-					<div class="text">
-						submitted by:{
-							submission_info
-								.submitted_by
-								.username
-						}
-						{formatted_timestamp}
+									submission_info.link
+								}</a
+							>
+						</span>
 					</div>
 				</div>
 			</div>
-			<div class="divider"></div>
-			<div
-				class="card bg-base-100 shadow-sm border-base-300 text-base-content mb-2 items-center"
-				id="leaderboard-article"
-			>
-				<div class="card-body w-fit">
-					<h3 class="text-xl">
-						Verify Submission
-					</h3>
 
-					<form
-						id="validate-submission"
-						class="flex flex-col gap-4"
-					>
-						<fieldset
-							class="fieldset w-fit"
-						>
-							<label
-								for="submission-comment"
-								class="fieldset-label"
-								>Submission
-								comments</label
-							>
-							<textarea
-								class="textarea w-fit"
-								id="submission-comment"
-								name="comment"
-								rows="4"
-								cols="50"
-								placeholder="Write your feedback here. "
-								aria-placeholder="Write public feedback for this submission."
-							></textarea>
+			<span class="opacity-80 m-2">
+				Submitted {formattedTimestamp}
+			</span>
 
-							<small
-								>This will be
-								available to
-								anyone with
-								access to this
-								leaderboard.</small
-							>
-						</fieldset>
-						<div
-							class="flex inline-flex justify-center gap-12"
-						>
-							<button
-								type="submit"
-								class="btn btn-success"
-								>Verify</button
-							>
+			{
+				isVerifier && (
+					<div>
+						<div class="divider divider-info">
+							<span class="opacity-80 font-semibold">
+								Verifier Actions
+								(only you can
+								see this)
+							</span>
 						</div>
-					</form>
-					<div role="alert" aria-live="assertive">
+						<div class="w-full flex justify-center my-2">
+							<SubmissionAdminForm
+								isVerified={
+									submission_info.verified
+								}
+							/>
+						</div>
 					</div>
-					<script>
-						import zod from "zod";
-						import { setupForm } from "@/lib/client/utils";
-						import { verifyScore } from "@/lib/client/formSubmits";
+				)
+			}
+			<div class="divider">
+				<span class="opacity-80 font-semibold">
+					History
+				</span>
+			</div>
 
-						document.addEventListener(
-							"astro:page-load",
-							() => {
-								setupForm(
-									document.querySelector(
-										"#validate-submission",
-									) as HTMLFormElement,
-									{
-										onBusy: "Verifying...",
+			<div class="w-full flex justify-center mb-4">
+				<ol
+					class="relative border-s border-gray-200 dark:border-gray-700 w-full xl:w-3/4"
+				>
+					{
+						formattedHistory.map(
+							(entry) => {
+								return (
+									<li class="ms-4 my-4">
+										<div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700" />
+										<time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
+											{
+												entry.timestamp
+											}
+										</time>
+										{entry.action ===
+											"validate" && (
+											<div class="badge badge-xs badge-soft badge-success mx-2">
+												Verified
+											</div>
+										)}
 
-										schema: zod.any(),
-										onSubmit: async () => {
-											verifyScore();
-											return true;
-										},
-									},
+										{entry.action ===
+											"comment" && (
+											<div class="badge badge-xs badge-soft mx-2">
+												Commented
+											</div>
+										)}
+										{entry.action ===
+											"invalidate" && (
+											<div class="badge badge-xs badge-soft badge-warning mx-2">
+												Invalidated
+											</div>
+										)}
+
+										<blockquote class="text-base font-normal text-gray-500 dark:text-gray-400">
+											<a class="link link-hover font-semibold link-info">
+												{
+													entry.author
+												}
+											</a>
+											{
+												entry.comment
+											}
+										</blockquote>
+									</li>
 								);
 							},
-						);
-					</script>
-
-					<div></div>
-				</div>
+						)
+					}
+				</ol>
 			</div>
 		</div>
-	</div></PageLayout
->
+	</div>
+</PageLayout>

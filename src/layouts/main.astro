@@ -207,7 +207,7 @@ const version = await getVersion();
 			<slot />
 		</div>
 		<footer
-			class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4"
+			class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4 opacity-80"
 		>
 			<aside>
 				<p>
@@ -224,6 +224,9 @@ const version = await getVersion();
 						href="https://docs.topktoday.dev"
 						>{version}</a
 					>
+
+					<div class="status status-success mx-1">
+					</div>
 				</small>
 			</aside>
 		</footer>

@@ -119,7 +119,7 @@ class CountdownTimer {
 				that.running = false;
 			}
 
-			that.tickFtns.forEach(function (ftn) {
+			that.tickFtns.forEach(function(ftn) {
 			}, that);
 		}());
 	};
@@ -188,6 +188,102 @@ export const getTodayAndTomorrow = (): { today: string, tomorrow: string } => {
 	return { today, tomorrow }
 }
 
+
+export const setupFormWithMultipleSubmits = (element: HTMLFormElement, config: Config<Schema>) => {
+
+	const onError = document.querySelector(
+		'[role="alert"]',
+	)
+	if (!onError) {
+		console.error("Unable to find form error message element")
+		return
+	}
+	const { onSubmit, schema, onBusy } = config;
+	const handler = async (event: any) => {
+		event.preventDefault();
+		onError.innerHTML = "";
+		console.log(event.submitter)
+		const form = event.currentTarget as any;
+		const data = Object.fromEntries(new FormData(form) as any);
+
+		console.log(data)
+		const buttons = form.querySelectorAll("button");
+		const inputs = form.querySelectorAll("input, textarea, select");
+		for (const input of inputs) {
+			if (input.getAttribute("type") === "radio" || input.getAttribute("type") === "checkbox") {
+				data[input.id] = input.checked
+			}
+		}
+		data[event.submitter.id] = true
+		const prevText = form.querySelector("button[type=submit]")?.textContent;
+
+		try {
+			const parsed = schema.parse(data);
+			for (const button of buttons) {
+				button.disabled = true;
+			}
+
+			for (const input of inputs) {
+				input.disabled = true;
+			}
+
+			event.submitter.textContent = onBusy;
+
+			const response = await onSubmit(parsed);
+
+			if (response) {
+				event.preventDefault();
+
+				if (response !== true) {
+					const message = response instanceof Error ? response.message : response;
+
+					onError.innerHTML = `<p>${message}</p>`;
+				}
+
+				for (const button of buttons) {
+					button.disabled = false;
+				}
+
+				for (const input of inputs) {
+					input.disabled = false;
+					input.value = ""
+				}
+
+				if (config.emitEvent) {
+					form.dispatchEvent(config.emitEvent)
+				}
+			}
+		} catch (error: any) {
+			console.log(error)
+			let message = error.message;
+
+			if (error.errors && error.errors.length) {
+				console.log(error.errors[0].path[0])
+				form.querySelector(`[name="${error.errors[0].path[0]}"]`).focus();
+				message = error.errors[0].message;
+			} else {
+				message = error.message;
+			}
+
+			event.submitter.textContent = prevText;
+			for (const button of buttons) {
+				button.disabled = false;
+			}
+
+			for (const input of inputs) {
+				input.disabled = false;
+			}
+
+			onError.innerHTML = `<p>${message}</p>`;
+		}
+	};
+	element.addEventListener("submit", handler);
+
+	return {
+		remove: () => element.removeEventListener("submit", handler),
+	};
+};
+
 export const setupForm = (element: HTMLFormElement, config: Config<Schema>) => {
 
 	const onError = document.querySelector(
@@ -201,7 +297,7 @@ export const setupForm = (element: HTMLFormElement, config: Config<Schema>) => {
 	const handler = async (event: any) => {
 		event.preventDefault();
 		onError.innerHTML = "";
-
+		console.log(event.submitter)
 		const form = event.currentTarget as any;
 		const data = Object.fromEntries(new FormData(form) as any);
 

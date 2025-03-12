@@ -1,5 +1,5 @@
 import zod from "zod";
-import { newLeaderboardSchema } from "./schemas";
+import { newLeaderboardSchema, submissionUpdate } from "./schemas";
 import { LEADERBOARD_API_BASE, pathJoin } from "./urls";
 import { getPageData } from "./utils"
 
@@ -37,18 +37,34 @@ export async function addScore(score: number, link: string) {
 
 }
 
-export async function verifyScore() {
+
+export async function commentOnScore(formBody: { comment: string }) {
+	const p = getPageData()
+	if (p.submission.length === 0 || p.leaderboard.length === 0) {
+		throw new Error("Stale data found -- please refresh the page and try again.")
+
+	}
+	await fetch(pathJoin([LEADERBOARD_API_BASE, p.leaderboard, "submission", p.submission, "comment"]), {
+		method: "PATCH",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(formBody)
+	})
+}
+
+export async function validateScore(formBody: { is_valid: boolean, comment: string }) {
 	const p = getPageData()
 	if (p.submission.length === 0 || p.leaderboard.length === 0) {
 		throw new Error("Stale data found -- please refresh the page and try again.")
 
 	}
 	await fetch(pathJoin([LEADERBOARD_API_BASE, p.leaderboard, "submission", p.submission, "verify"]), {
-		method: "POST",
+		method: "PATCH",
 		headers: {
 			"Content-Type": "application/json"
 		},
-	});
-
+		body: JSON.stringify(formBody)
+	})
 }
 

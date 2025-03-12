@@ -33,9 +33,8 @@ try {
 	info = await getLeaderboardInfo(leaderboard_id as string);
 	leaderboard = await getLeaderboard(leaderboard_id as string);
 	verifiers = (await getVerifiers(leaderboard_id as string)).verifiers;
-	console.log(info);
 } catch (e) {
-	console.log(e);
+	console.error(e);
 	Astro.redirect("/system-down");
 }
 

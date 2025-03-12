@@ -28,7 +28,7 @@ try {
 	info = await getLeaderboardInfo(leaderboard_id as string);
 	submission_info = await getSubmissionInfo(
 		leaderboard_id as string,
-		submission_id,
+		submission_id as string,
 	);
 	verifiers = (await getVerifiers(leaderboard_id as string)).verifiers;
 } catch (e) {
@@ -42,7 +42,6 @@ const isVerifier =
 		return user.id === v.id;
 	});
 const formatted_timestamp = formatTimeAgo(submission_info.last_submitted);
-console.log(verifiers, user, isVerifier);
 ---
 
 <PageLayout

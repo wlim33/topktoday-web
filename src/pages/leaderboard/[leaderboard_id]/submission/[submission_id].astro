@@ -61,7 +61,7 @@ const formattedHistory = history.map((entry) => {
 		comment: entry.comment,
 		author: entry.author.username,
 		action: entry.action,
-		timestamp: formatTimeAgo(entry.submitted_at),
+		timestamp: formatHistoryTimestamp(entry.submitted_at),
 		authorLink: `www.topdevktoday.dev/account/${entry.author.id}`,
 	};
 });
@@ -231,6 +231,37 @@ const formattedHistory = history.map((entry) => {
 							},
 						)
 					}
+
+					<li class="ms-4 my-4">
+						<div
+							class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"
+						>
+						</div>
+						<time
+							class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500"
+						>
+							{
+								formatHistoryTimestamp(
+									submission_info.last_submitted,
+								)
+							}
+						</time>
+						<blockquote
+							class="text-base font-normal text-gray-500 dark:text-gray-400"
+						>
+							Submitted by
+							<a
+								href={`https://www.topktoday.dev/account/${submission_info.submitted_by.id}`}
+								class="link link-hover font-semibold link-info"
+							>
+								{
+									submission_info
+										.submitted_by
+										.username
+								}
+							</a>
+						</blockquote>
+					</li>
 				</ol>
 			</div>
 		</div>

@@ -21,8 +21,8 @@ const { leaderboard_id } = Astro.params;
 let info: LeaderboardInfo = {
 	title: "",
 	start: "",
-	duration: "",
-	allow_multiple: true,
+	stop: "",
+	verify: false,
 	is_time: false,
 	highest_first: true,
 	created_at: "",
@@ -67,10 +67,13 @@ const showModal = Astro.url.searchParams.get("showModal") || "";
 						</u>
 					</CopyLink>
 
-					<Countdown
-						rawduration={info.duration}
-						start={info.start}
-					/>
+					{
+						info.stop && (
+							<Countdown
+								stop={info.stop}
+							/>
+						)
+					}
 				</div>
 				<div class="flex flex-col justify-around">
 					<label
@@ -128,11 +131,12 @@ const showModal = Astro.url.searchParams.get("showModal") || "";
 										>
 											{idx +
 												1}
-											{!score.verified && (
-												<sup>
-													*
-												</sup>
-											)}
+											{info.verify &&
+												!score.verified && (
+													<sup>
+														*
+													</sup>
+												)}
 										</th>
 										<td class="row-user">
 											<a
@@ -182,9 +186,13 @@ const showModal = Astro.url.searchParams.get("showModal") || "";
 					</tfoot>
 				</table>
 			</div>
-			<small class="opacity-60"
-				>*scores are not verified.</small
-			>
+			{
+				info.verify && (
+					<small class="opacity-60">
+						*scores are not verified.
+					</small>
+				)
+			}
 		</div>
 
 		<h4 class="text-l px-2">Verifiers:</h4>
@@ -219,7 +227,10 @@ const showModal = Astro.url.searchParams.get("showModal") || "";
 	/>
 	<div class="modal" role="dialog">
 		<div class="modal-box w-sm xs:w-xs overflow-x-clip">
-			<NewSubmission info={info} />
+			<NewSubmission
+				info={info}
+				leaderboardId={leaderboard_id}
+			/>
 		</div>
 		<label class="modal-backdrop" for="new-submission-modal"
 			>Close</label

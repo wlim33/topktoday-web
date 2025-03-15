@@ -28,7 +28,7 @@ const version = await getVersion();
 			}
 		</script>
 	</head>
-	<body class="flex flex-col items-center bg-base-200">
+	<body class="flex flex-col items-center bg-base-300 shadow-sm">
 		<div
 			id="frontmatter-store"
 			data-leaderboard={leaderboard}
@@ -37,7 +37,7 @@ const version = await getVersion();
 		</div>
 		<div class="bg-base-100 w-full flex flex-col items-center">
 			<div
-				class="navbar bg-base-100 shadow-sm lg:w-full xl:w-5/6"
+				class="navbar bg-base-100 shadow-sm w-full lg:w-5/6 xl:w-3/4"
 			>
 				<div class="navbar-start">
 					<a
@@ -203,7 +203,9 @@ const version = await getVersion();
 			</div>
 		</div>
 
-		<div class="bg-base-200">
+		<div
+			class="w-full lg:w-5/6 xl:w-3/4 xl:px-12 lg:px-4 px-2 shadow-sm"
+		>
 			<slot />
 		</div>
 		<footer

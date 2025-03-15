@@ -18,22 +18,15 @@ export type Config<T extends Schema> = {
 };
 
 
-export function parseRawLeaderboardInfo(rawStart: string, rawDuration: number) {
-
-	const parsed_duration = dayjs.duration({
-		milliseconds: rawDuration / 1000000,
-	});
-
-	const start = dayjs(rawStart);
-	return { duration: parsed_duration, start }
-
+export function parseRawLeaderboardInfo(rawStop: string) {
+	return dayjs(rawStop)
 }
 
-export function getRemaining(start: dayjs.Dayjs, duration_obj: duration.Duration) {
+export function getRemaining(stop: dayjs.Dayjs) {
 	const now = dayjs();
 
-	const remaining = now.diff(start);
-	return duration_obj.subtract(remaining)
+	const remaining = stop.diff(now);
+	return dayjs.duration(remaining)
 }
 
 
@@ -119,7 +112,7 @@ class CountdownTimer {
 				that.running = false;
 			}
 
-			that.tickFtns.forEach(function(ftn) {
+			that.tickFtns.forEach(function (ftn) {
 			}, that);
 		}());
 	};

@@ -9,16 +9,20 @@ const { user } = Astro.locals;
 let leaderboards = [];
 let submissions = [];
 
-leaderboards = (await getUserLeaderboards(user?.id)).leaderboards;
-submissions = (await getUserSubmissions(user?.id)).submissions;
+try {
+	leaderboards = await getUserLeaderboards(user?.id);
+	submissions = await getUserSubmissions(user?.id);
+} catch (e) {
+	Astro.redirect("/system-down");
+}
 ---
 
 <MainLayout title="Account">
 	<AccountLayout>
+		<AccountUsage leaderboadsTotal={leaderboards.length} />
 		<AccountOverview
 			leaderboards={leaderboards}
 			submissions={submissions}
 		/>
-		<AccountUsage />
 	</AccountLayout>
 </MainLayout>

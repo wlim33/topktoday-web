@@ -1,48 +1,69 @@
 ---
-
+const {
+	leaderboardCount = 1,
+	leaderboadsTotal = 50,
+	leaderboardLimit = 5,
+	activeLeaderboards = 1,
+} = Astro.props;
+const leaderboardPercentage = (100 * leaderboardCount) / leaderboardLimit;
 ---
 
-<div class="flex flex-col min-w-full xl:min-w-196 lg:min-w-196">
-	<div class="flex inline-flex justify-between my-4">
-		<div class="flex flex-col justify-around min-h-min">
-			<h2 class="lg:text-lg xl:text-xl text-info">Usage</h2>
+<div class="flex flex-col w-full px-2 items-center">
+	<div class="flex flex-col w-full xl:w-3/4 lg:w-5/6 items-center">
+		<div class="flex inline-flex justify-between my-4 w-full">
+			<div
+				class="flex inline-flex justify-between items-min-h-min w-full"
+			>
+				<h2 class="lg:text-lg opacity-80 font-semibold">
+					Usage
+				</h2>
+				<h3 class="text-sm opacity-50">
+					Plan:<span class="font-semibold">
+						Anonymous</span
+					>
+				</h3>
+			</div>
 		</div>
-	</div>
-	<div
-		class="card bg-base-100 shadow-sm border-base-300 text-base-content px-4 pb-6 mb-2"
-		id="leaderboard-article"
-	>
-		<div class="flex inline-flex justify-between my-4">
-			<h3 class="text-xl font-bold opacity-80">
-				Anonymous plan
-			</h3>
-		</div>
-		<ul>
-			<li class="list-row">
-				<div class="flex w-full">
-					<progress
-						class="progress w-56"
-						value="100"
-						max="100"></progress>
+		<div class="stats shadow bg-base-100 w-full">
+			<div class="stat place-items-center">
+				<div class="stat-title">New Leaderboards</div>
+				<div class="stat-value">
+					<div
+						class="radial-progress text-primary my-2"
+						style=`--value:${leaderboardPercentage}; --size:6rem; --thickness: 0.5rem;`
+						aria-valuenow={leaderboardPercentage}
+						role="progressbar"
+					>
+						<span class="text-sm">
+							{leaderboardCount}/{
+								leaderboardLimit
+							}
+						</span>
+					</div>
 				</div>
 
-				<h3 class="text-md opacity-60">
-					Leaderboards (5/12)
-				</h3>
-			</li>
-
-			<li class="list-row">
-				<div class="flex w-full">
-					<progress
-						class="progress w-56"
-						value="100"
-						max="100"></progress>
+				<div class="stat-desc font-bold">
+					This Month
 				</div>
+			</div>
 
-				<h3 class="text-md opacity-60">
-					Max Verifiers (1/5)
-				</h3>
-			</li>
-		</ul>
+			<div class="stat place-items-center">
+				<div class="stat-title">New Leaderboards</div>
+				<div class="stat-value text-primary">
+					{leaderboadsTotal}
+				</div>
+				<div class="stat-desc font-bold">All time</div>
+			</div>
+
+			<div class="stat place-items-center">
+				<div class="stat-title">
+					Active Leaderboards
+				</div>
+				<div class="stat-value text-accent">
+					{activeLeaderboards}
+				</div>
+				<div class="stat-desc font-bold">Current</div>
+			</div>
+		</div>
 	</div>
 </div>

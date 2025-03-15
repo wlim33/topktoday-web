@@ -75,31 +75,31 @@ console.log(ismodal);
 					class="inline-flex items-center justify-start gap-2"
 				>
 					<legend class="fieldset-legend">
-						Users can submit more than once:
+						Submissions need to be verified?
 					</legend>
 
 					<label
 						class="fieldset-label"
-						for="multiple-submissions-yes"
+						for="submissions-verified-yes"
 					>
 						<input
 							class="radio"
 							type="radio"
-							name="multiple-submissions"
-							id="multiple-submissions-yes"
+							name="verify-submissions"
+							id="submissions-verified-yes"
 							checked
 						/>
 						Yes</label
 					>
 					<label
-						for="multiple-submissions-no"
+						for="submissions-verified-no"
 						class="fieldset-label"
 					>
 						<input
 							class="radio"
 							type="radio"
-							name="multiple-submissions"
-							id="multiple-submissions-no"
+							name="verify-submissions"
+							id="submissions-verified-no"
 						/>
 						No</label
 					>
@@ -138,7 +138,7 @@ console.log(ismodal);
 							name="start-immediately"
 							id="start-immediately-no"
 						/>
-						Custom date
+						Custom start date
 					</label>
 				</div>
 
@@ -170,9 +170,6 @@ console.log(ismodal);
 						class="select w-max"
 						name="duration-raw"
 					>
-						<option value="P1H"
-							>1 hour</option
-						>
 						<option value="P1D" selected
 							>1 day</option
 						>

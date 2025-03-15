@@ -1,15 +1,12 @@
 ---
 import { getRemaining } from "@/lib/server/utils";
-const { start, rawduration } = Astro.props;
+const { stop } = Astro.props;
 
-const remainingDuration = getRemaining(start, rawduration);
+const remainingDuration = getRemaining(stop);
+console.log(remainingDuration);
 ---
 
-<count-down
-	class="text-md opacity-60"
-	data-duration={rawduration}
-	data-start={start}
->
+<count-down class="text-md opacity-60" data-stop={stop}>
 	<div class="flex justify-start gap-2">
 		<span class="countdown font-mono text-md"> Closes in </span>
 		<span
@@ -75,21 +72,13 @@ const remainingDuration = getRemaining(start, rawduration);
 
 		class Countdown extends HTMLElement {
 			connectedCallback() {
-				let rawDuration = 1000000000;
-				if (this.dataset.duration !== undefined) {
-					rawDuration = +this.dataset.duration;
+				if (this.dataset.stop === undefined) {
+					return;
 				}
 
-				let rawStart = "2025-03-11T21:58:25.280689Z";
-				if (this.dataset.start !== undefined) {
-					rawStart = this.dataset.start;
-				}
-
-				const { duration, start } =
-					parseRawLeaderboardInfo(
-						rawStart,
-						rawDuration,
-					);
+				const stop = parseRawLeaderboardInfo(
+					this.dataset.stop,
+				);
 
 				const day_section = document.querySelector(
 					"#days-section",
@@ -111,10 +100,7 @@ const remainingDuration = getRemaining(start, rawduration);
 					"#timer-seconds",
 				) as HTMLSpanElement;
 				const updateElements = () => {
-					let remaining = getRemaining(
-						start,
-						duration,
-					);
+					let remaining = getRemaining(stop);
 					let leadingZeros = true;
 
 					leadingZeros =

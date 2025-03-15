@@ -52,8 +52,8 @@ export const newLeaderboardSchema = zod.object({
 	title: leaderboardTitle,
 	"highest-score": zod.boolean(),
 	"lowest-time": zod.boolean(),
-	"multiple-submissions-yes": zod.boolean(),
-	"multiple-submissions-no": zod.boolean(),
+	"submissions-verified-yes": zod.boolean(),
+	"submissions-verified-no": zod.boolean(),
 	"start-date-custom": zod.string().transform(value => `${value}Z`),
 	"duration-raw": zod.string(),
 	"start-immediately-yes": zod.boolean(),
@@ -62,21 +62,23 @@ export const newLeaderboardSchema = zod.object({
 	const formatted: any = {
 		title: val.title,
 		highest_first: val['highest-score'],
-		multiple_submissions: val['multiple-submissions-yes'] || !val['multiple-submissions-no'],
+		verify: val['submissions-verified-yes'] || !val['submissions-verified-no'],
 		is_time: !val['highest-score'],
 	}
 	const start_now = val['start-immediately-yes']
 	const end_never = val['duration-raw'] === 'Never'
 
 	let start = dayjs()
-	if (!start_now) {
+	if (start_now) {
 		start = dayjs(val['start-date-custom'])
+		formatted.start = start.toISOString()
+	} else {
+		start = dayjs()
 		formatted.start = start.toISOString()
 	}
 	if (!end_never) {
-		formatted.duration = dayjs.duration(val['duration-raw'] as string).toISOString()
+		formatted.stop = start.add(dayjs.duration(val['duration-raw'] as string))
 	}
-	console.log("submission:", formatted)
 
 	return formatted
 })

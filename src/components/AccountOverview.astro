@@ -1,90 +1,144 @@
 ---
-import { formatTimeAgo } from "@/lib/server/utils";
-const { leaderboards, submissions } = Astro.props;
+import { formatHistoryTimestamp, formatTimeFromNow } from "@/lib/server/utils";
+const { leaderboards = [], submissions = [] } = Astro.props;
 const leaderboard_count = leaderboards.length;
 const submission_count = submissions.length;
 ---
 
-<div class="flex flex-col min-w-full xl:min-w-196 lg:min-w-196">
-	<div class="flex inline-flex justify-between my-4">
-		<div class="flex flex-col justify-around min-h-min">
-			<h2 class="lg:text-2xl xl:text-3xl text-info">
-				Account Overview
-			</h2>
+<div class="flex flex-col w-full px-2 items-center">
+	<div class="flex flex-col w-full xl:w-3/4 lg:w-5/6 items-center">
+		<div class="flex inline-flex justify-between my-4 w-full">
+			<div class="flex flex-col justify-around min-h-min">
+				<h2 class="lg:text-xl opacity-80 font-semibold">
+					Account Overview
+				</h2>
+			</div>
 		</div>
-	</div>
-	<div
-		class="card bg-base-100 shadow-sm border-base-300 text-base-content px-4 pb-6 mb-2"
-		id="leaderboard-article"
-	>
-		<div class="flex inline-flex justify-between my-4">
-			<h3 class="text-xl font-bold opacity-80">
+		<div class="flex inline-flex justify-between my-4 w-full">
+			<h3 class="text-md font-bold opacity-80 font-medium">
 				Leaderboards
 			</h3>
-			<span class="mx-3 opacity-80"
+			<span class="text-xs opacity-60 tracking-wide"
 				>{leaderboard_count} total</span
 			>
 		</div>
-		<ul class="list bg-base-300 rounded-box shadow-md">
-			{
-				leaderboards.map((leaderboard) => (
-					<li class="list-row flex inline-flex justify-between">
-						<a
-							class=" font-semibold link link-hover link-primary"
-							href={`/leaderboard/${leaderboard.id}`}
-						>
-							{leaderboard.title}
-						</a>
 
-						<span class="opacity-80">
-							{formatTimeAgo(
-								leaderboard.created_at,
-							)}
-						</span>
-					</li>
-				))
-			}
-		</ul>
+		<div class="text-base-content px-4 py-2 mb-2 w-full">
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">Title</th>
+
+						<th scope="col">
+							Submissions</th
+						>
+						<th scope="col">Start Date</th>
+						<th scope="col">Stop Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					{
+						leaderboards.map(
+							(leaderboard) => (
+								<tr>
+									<th>
+										<a
+											class="link link-hover link-primary"
+											href={`/leaderboard/${leaderboard.id}`}
+										>
+											{
+												leaderboard.title
+											}
+										</a>
+									</th>
+									<td class="font-semibold opacity-80">
+										12/12
+									</td>
+									<td class="font-semibold opacity-80">
+										{formatHistoryTimestamp(
+											leaderboard.start,
+										)}
+									</td>
+									<td class="font-semibold opacity-80">
+										{formatTimeFromNow(
+											leaderboard.stop,
+										)}
+									</td>
+								</tr>
+							),
+						)
+					}
+				</tbody>
+			</table>
+		</div>
 		<div class="divider"></div>
-		<div class="flex inline-flex justify-between">
-			<h3 class="text-xl font-bold opacity-80">
+		<div class="flex inline-flex justify-between mb-4 w-full">
+			<h3 class="text-md font-bold opacity-80 font-medium">
 				Submissions
 			</h3>
-			<span class="mx-3 opacity-80"
+			<span class="text-xs opacity-60 tracking-wide"
 				>{submission_count} total</span
 			>
 		</div>
-		<ul class="list bg-base-300 rounded-box shadow-md">
-			{
-				submissions.map((submission) => (
-					<li class="list-row">
-						<span>
-							Submitted
-							<a
-								class="link link-accent link-hover"
-								href={`/leaderboard/${submission.leaderboard_id}/submission/${submission.id}`}
-							>
-								{
-									submission.score
-								}
-							</a>
-							for
-							<a
-								class="link link-info link-hover font-semibold"
-								href={`/leaderboard/${submission.leaderboard_id}`}
-							>
-								{
-									submission.leaderboard_title
-								}
-							</a>
-							at
-							{
-								submission.last_submitted
-							}
-						</span>
-					</li>
-				))
-			}
-		</ul>
+
+		<div class="text-base-content px-4 py-2 mb-2 w-full">
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">Score/Time</th>
+						<th scope="col">Leaderboard</th>
+						<th scope="col">Verified</th>
+						<th scope="col">Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					{
+						submissions.map(
+							(submission) => (
+								<tr>
+									<td>
+										<a
+											class="link link-accent link-hover font-semibold"
+											href={`/leaderboard/${submission.leaderboard_id}/submission/${submission.id}`}
+										>
+											{
+												submission.score
+											}
+										</a>
+									</td>
+									<th>
+										<a
+											class="link link-primary link-hover font-semibold"
+											href={`/leaderboard/${submission.leaderboard_id}`}
+										>
+											{
+												submission.leaderboard_title
+											}
+										</a>
+									</th>
+									<td>
+										{submission.verified ? (
+											<div class="badge badge-soft badge-success badge-md ">
+												Verified
+											</div>
+										) : (
+											<div class="badge badge-soft badge-warning badge-md ">
+												Not
+												Verified
+											</div>
+										)}
+									</td>
+									<td>
+										{formatHistoryTimestamp(
+											submission.last_submitted,
+										)}
+									</td>
+								</tr>
+							),
+						)
+					}
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>

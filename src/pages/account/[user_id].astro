@@ -8,8 +8,13 @@ const { user_id } = Astro.params;
 let leaderboards = [];
 let submissions = [];
 
-leaderboards = (await getUserLeaderboards(user_id)).leaderboards;
-submissions = (await getUserSubmissions(user_id)).submissions;
+try {
+	leaderboards = await getUserLeaderboards(user_id);
+	submissions = await getUserSubmissions(user_id);
+} catch (e) {
+	console.error(e);
+	Astro.redirect("/404");
+}
 ---
 
 <MainLayout title="Account">

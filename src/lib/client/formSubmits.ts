@@ -45,7 +45,7 @@ export async function commentOnScore(formBody: { comment: string }) {
 
 	}
 	await fetch(pathJoin([LEADERBOARD_API_BASE, p.leaderboard, "submission", p.submission, "comment"]), {
-		method: "PATCH",
+		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		},

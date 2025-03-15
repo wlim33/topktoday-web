@@ -87,7 +87,8 @@ export async function getUserLeaderboards(userId: string) {
 	const path = pathJoin([import.meta.env.PUBLIC_API_DOMAIN, "account", userId, "leaderboards"])
 	const resp = await fetch(path);
 	const body = await resp.json();
-	return body
+	console.log(body)
+	return body.leaderboards
 }
 
 
@@ -96,7 +97,8 @@ export async function getUserSubmissions(userId: string) {
 	const resp = await fetch(path);
 	const body = await resp.json();
 
-	return body
+	console.log(body)
+	return body.submissions
 }
 
 export async function getVersion() {

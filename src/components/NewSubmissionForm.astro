@@ -1,9 +1,9 @@
 ---
 import CopyLink from "./CopyLink.astro";
-const { info } = Astro.props;
+const { info, leaderboardId } = Astro.props;
 
 const { user } = Astro.locals;
-console.log(user);
+console.log(info);
 const isLoggedIn: boolean =
 	user !== null &&
 	user.isAnonymous !== null &&
@@ -21,7 +21,10 @@ const title = `Submit your ${info.is_time ? "time" : "score"} for ${info.title}`
 				{`${info.is_time ? "time" : "score"} `}
 			</span>
 			<span> for </span>
-			<CopyLink id={info.id} directionBottom={true}>
+			<CopyLink
+				link={`www.topktoday.dev/leaderboard/${leaderboardId}`}
+				directionBottom={true}
+			>
 				<u
 					class="lg:text-xl xl:text-2xl link link-primary link-hover"
 				>
